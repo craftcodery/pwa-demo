@@ -2,7 +2,10 @@ import { XMarkIcon, DevicePhoneMobileIcon } from '@heroicons/react/24/outline'
 import { useInstallPrompt } from '../../hooks'
 
 export function InstallBanner() {
-  const { isInstallable, isInstalled, isIOS, installPrompt, dismissPrompt, wasPromptDismissed } = useInstallPrompt()
+  const { isInstallable, isInstalled, isIOS, installPrompt, dismissPrompt, wasPromptDismissed, useCustomBanner } = useInstallPrompt()
+
+  // Don't show if using browser's native UI instead of custom banner
+  if (!useCustomBanner) return null
 
   // Don't show if already installed, dismissed, or not installable (and not iOS)
   if (isInstalled || wasPromptDismissed) return null

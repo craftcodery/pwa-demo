@@ -14,6 +14,8 @@ interface UseInstallPromptReturn {
   resetDismissed: () => void
   wasPromptDismissed: boolean
   canShowNativePrompt: boolean
+  useCustomBanner: boolean
+  setUseCustomBanner: (value: boolean) => void
 }
 
 const DISMISS_DURATION_DAYS = 7 // Re-show prompt after 7 days
@@ -21,6 +23,11 @@ const DISMISS_DURATION_DAYS = 7 // Re-show prompt after 7 days
 export function useInstallPrompt(): UseInstallPromptReturn {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null)
   const [isInstalled, setIsInstalled] = useState(false)
+  const [useCustomBanner, setUseCustomBannerState] = useState(() => {
+    const stored = localStorage.getItem('pwa-use-custom-banner')
+    // Default to true (custom banner) if not set
+    return stored !== 'false'
+  })
   const [wasPromptDismissed, setWasPromptDismissed] = useState(() => {
     const dismissedAt = localStorage.getItem('pwa-install-dismissed-at')
     if (!dismissedAt) return false
@@ -59,7 +66,12 @@ export function useInstallPrompt(): UseInstallPromptReturn {
   // Capture the beforeinstallprompt event
   useEffect(() => {
     const handleBeforeInstallPrompt = (e: Event) => {
-      e.preventDefault()
+      // Only suppress browser's native UI if using custom banner
+      // Read directly from localStorage to get the latest value
+      const useCustom = localStorage.getItem('pwa-use-custom-banner') !== 'false'
+      if (useCustom) {
+        e.preventDefault()
+      }
       setDeferredPrompt(e as BeforeInstallPromptEvent)
     }
 
@@ -106,6 +118,11 @@ export function useInstallPrompt(): UseInstallPromptReturn {
     localStorage.removeItem('pwa-install-dismissed-at')
   }, [])
 
+  const setUseCustomBanner = useCallback((value: boolean) => {
+    setUseCustomBannerState(value)
+    localStorage.setItem('pwa-use-custom-banner', value.toString())
+  }, [])
+
   // Detect iOS for manual install instructions
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) &&
     !(window as unknown as { MSStream?: unknown }).MSStream
@@ -119,6 +136,8 @@ export function useInstallPrompt(): UseInstallPromptReturn {
     resetDismissed,
     wasPromptDismissed,
     // True if we have a deferred prompt ready to show
-    canShowNativePrompt: !!deferredPrompt
+    canShowNativePrompt: !!deferredPrompt,
+    useCustomBanner,
+    setUseCustomBanner
   }
 }

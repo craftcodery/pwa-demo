@@ -20,7 +20,9 @@ export function Settings() {
     installPrompt,
     resetDismissed,
     wasPromptDismissed,
-    canShowNativePrompt
+    canShowNativePrompt,
+    useCustomBanner,
+    setUseCustomBanner
   } = useInstallPrompt()
   const [theme, setTheme] = useState<Theme>(() => {
     return (localStorage.getItem('theme') as Theme) || 'system'
@@ -136,6 +138,65 @@ export function Settings() {
           </div>
         )}
       </div>
+
+      {/* Install Prompt Style */}
+      {!isInstalled && !isIOS && (
+        <div className="p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
+          <h2 className="font-medium text-slate-900 dark:text-white mb-2">Install Prompt Style</h2>
+          <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+            Choose how the install prompt appears. This setting takes effect on the next page load.
+          </p>
+
+          <div className="space-y-2">
+            <label className="flex items-start gap-3 p-3 rounded-xl border-2 cursor-pointer transition-all hover:border-slate-300 dark:hover:border-slate-600"
+              style={{
+                borderColor: useCustomBanner ? 'rgb(99 102 241)' : undefined,
+                backgroundColor: useCustomBanner ? 'rgb(238 242 255)' : undefined
+              }}
+            >
+              <input
+                type="radio"
+                name="promptStyle"
+                checked={useCustomBanner}
+                onChange={() => setUseCustomBanner(true)}
+                className="mt-1"
+              />
+              <div>
+                <span className="font-medium text-slate-900 dark:text-white">Custom Banner</span>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                  Shows our custom install banner at the bottom of the screen with dismiss option.
+                </p>
+              </div>
+            </label>
+
+            <label className="flex items-start gap-3 p-3 rounded-xl border-2 cursor-pointer transition-all hover:border-slate-300 dark:hover:border-slate-600"
+              style={{
+                borderColor: !useCustomBanner ? 'rgb(99 102 241)' : undefined,
+                backgroundColor: !useCustomBanner ? 'rgb(238 242 255)' : undefined
+              }}
+            >
+              <input
+                type="radio"
+                name="promptStyle"
+                checked={!useCustomBanner}
+                onChange={() => setUseCustomBanner(false)}
+                className="mt-1"
+              />
+              <div>
+                <span className="font-medium text-slate-900 dark:text-white">Browser Native UI</span>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                  Let the browser show its own install UI (mini-infobar on Android, address bar icon on desktop).
+                </p>
+              </div>
+            </label>
+          </div>
+
+          <p className="text-xs text-amber-600 dark:text-amber-400 mt-3">
+            Note: After changing this setting, refresh the page to see the browser's native UI.
+            The browser may not show its UI immediately - it depends on engagement heuristics.
+          </p>
+        </div>
+      )}
 
       {/* Notification Settings */}
       <div className="p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
