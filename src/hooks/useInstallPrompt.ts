@@ -18,8 +18,6 @@ interface UseInstallPromptReturn {
   setUseCustomBanner: (value: boolean) => void
 }
 
-const DISMISS_DURATION_DAYS = 7 // Re-show prompt after 7 days
-
 export function useInstallPrompt(): UseInstallPromptReturn {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null)
   const [isInstalled, setIsInstalled] = useState(false)
@@ -28,22 +26,9 @@ export function useInstallPrompt(): UseInstallPromptReturn {
     // Default to true (custom banner) if not set
     return stored !== 'false'
   })
+  // Use sessionStorage so dismiss only lasts for current session (good for demo)
   const [wasPromptDismissed, setWasPromptDismissed] = useState(() => {
-    const dismissedAt = localStorage.getItem('pwa-install-dismissed-at')
-    if (!dismissedAt) return false
-
-    // Check if dismiss has expired
-    const dismissedTime = parseInt(dismissedAt, 10)
-    const now = Date.now()
-    const daysSinceDismiss = (now - dismissedTime) / (1000 * 60 * 60 * 24)
-
-    if (daysSinceDismiss >= DISMISS_DURATION_DAYS) {
-      // Dismiss has expired, clear it
-      localStorage.removeItem('pwa-install-dismissed-at')
-      return false
-    }
-
-    return true
+    return sessionStorage.getItem('pwa-install-dismissed') === 'true'
   })
 
   // Check if running in standalone mode (already installed)
@@ -78,7 +63,7 @@ export function useInstallPrompt(): UseInstallPromptReturn {
     const handleAppInstalled = () => {
       setIsInstalled(true)
       setDeferredPrompt(null)
-      localStorage.removeItem('pwa-install-dismissed-at')
+      sessionStorage.removeItem('pwa-install-dismissed')
     }
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
@@ -110,12 +95,12 @@ export function useInstallPrompt(): UseInstallPromptReturn {
 
   const dismissPrompt = useCallback(() => {
     setWasPromptDismissed(true)
-    localStorage.setItem('pwa-install-dismissed-at', Date.now().toString())
+    sessionStorage.setItem('pwa-install-dismissed', 'true')
   }, [])
 
   const resetDismissed = useCallback(() => {
     setWasPromptDismissed(false)
-    localStorage.removeItem('pwa-install-dismissed-at')
+    sessionStorage.removeItem('pwa-install-dismissed')
   }, [])
 
   const setUseCustomBanner = useCallback((value: boolean) => {
