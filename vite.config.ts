@@ -13,16 +13,16 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'icons/*.png', 'screenshots/*.png'],
       manifest: {
-        name: 'Daily Focus - PWA Demo',
-        short_name: 'Daily Focus',
-        description: 'A productivity app demonstrating modern Progressive Web App capabilities and best practices',
+        name: 'PWA Demo - Progressive Web App Showcase',
+        short_name: 'PWA Demo',
+        description: 'An interactive showcase demonstrating Progressive Web App capabilities, browser APIs, and best practices for evaluating PWAs for your projects',
         theme_color: '#6366f1',
         background_color: '#ffffff',
         display: 'standalone',
         orientation: 'any',
         start_url: '/pwa-demo/',
         scope: '/pwa-demo/',
-        categories: ['productivity', 'utilities'],
+        categories: ['developer tools', 'utilities', 'education'],
         icons: [
           {
             src: 'icons/icon-72x72.png',
@@ -78,29 +78,29 @@ export default defineConfig({
             sizes: '1280x720',
             type: 'image/png',
             form_factor: 'wide',
-            label: 'Daily Focus Desktop View'
+            label: 'PWA Demo Desktop View'
           },
           {
             src: 'screenshots/mobile.png',
             sizes: '540x720',
             type: 'image/png',
             form_factor: 'narrow',
-            label: 'Daily Focus Mobile View'
+            label: 'PWA Demo Mobile View'
           }
         ],
         shortcuts: [
           {
-            name: 'Add New Task',
-            short_name: 'Add Task',
-            description: 'Quickly add a new task to your focus list',
-            url: '/pwa-demo/#/add',
+            name: 'Test Capabilities',
+            short_name: 'Capabilities',
+            description: 'Test PWA features and device APIs',
+            url: '/pwa-demo/#/capabilities',
             icons: [{ src: 'icons/shortcut-add.png', sizes: '96x96' }]
           },
           {
-            name: "Today's Focus",
-            short_name: 'Today',
-            description: "View today's priority tasks",
-            url: '/pwa-demo/#/today',
+            name: 'PWA vs Native',
+            short_name: 'Compare',
+            description: 'Compare PWA and native app capabilities',
+            url: '/pwa-demo/#/compare',
             icons: [{ src: 'icons/shortcut-today.png', sizes: '96x96' }]
           }
         ],

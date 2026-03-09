@@ -22,12 +22,12 @@ export function InstallBanner() {
 
             <div className="flex-1 min-w-0">
               <h3 className="text-base font-semibold text-slate-900 dark:text-white">
-                Install Daily Focus
+                Install PWA Demo
               </h3>
               <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
                 {isIOS
-                  ? 'Add to your home screen for the best experience. Tap the share button and select "Add to Home Screen".'
-                  : 'Install this app on your device for quick access and offline support.'
+                  ? 'Install this demo app to experience PWA features. Tap Share then "Add to Home Screen".'
+                  : 'Install this demo to test PWA features offline and see how installation works.'
                 }
               </p>
             </div>

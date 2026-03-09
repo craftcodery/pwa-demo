@@ -1,3 +1,5 @@
-export { Home } from './Home'
-export { Features } from './Features'
+export { Overview } from './Overview'
+export { Capabilities } from './Capabilities'
+export { Compare } from './Compare'
+export { HowTo } from './HowTo'
 export { Settings } from './Settings'

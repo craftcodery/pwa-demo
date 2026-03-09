@@ -2,31 +2,38 @@ import { useState, useEffect } from 'react'
 import {
   HomeIcon,
   Cog6ToothIcon,
-  SparklesIcon
+  BoltIcon,
+  ScaleIcon,
+  BookOpenIcon
 } from '@heroicons/react/24/outline'
 import {
   HomeIcon as HomeIconSolid,
-  Cog6ToothIcon as Cog6ToothIconSolid,
-  SparklesIcon as SparklesIconSolid
+  BoltIcon as BoltIconSolid,
+  ScaleIcon as ScaleIconSolid,
+  BookOpenIcon as BookOpenIconSolid
 } from '@heroicons/react/24/solid'
-import { Home, Features, Settings } from './pages'
+import { Overview, Capabilities, Compare, HowTo, Settings } from './pages'
 import { InstallBanner, InstallButton, OfflineIndicator } from './components'
 import { useInstallPrompt } from './hooks'
 
-type Page = 'home' | 'features' | 'settings'
+type Page = 'overview' | 'capabilities' | 'compare' | 'howto' | 'settings'
 
 function App() {
-  const [currentPage, setCurrentPage] = useState<Page>('home')
+  const [currentPage, setCurrentPage] = useState<Page>('overview')
   const { isInstalled } = useInstallPrompt()
 
   // Handle hash-based routing for share_target and shortcuts
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.slice(2) // Remove #/
-      if (hash === 'add' || hash === 'today' || hash === 'share') {
-        setCurrentPage('home')
-      } else if (hash === 'features') {
-        setCurrentPage('features')
+      if (hash === 'overview' || hash === '' || hash === 'add' || hash === 'today' || hash === 'share') {
+        setCurrentPage('overview')
+      } else if (hash === 'capabilities' || hash === 'features') {
+        setCurrentPage('capabilities')
+      } else if (hash === 'compare') {
+        setCurrentPage('compare')
+      } else if (hash === 'howto' || hash === 'how-to') {
+        setCurrentPage('howto')
       } else if (hash === 'settings') {
         setCurrentPage('settings')
       }
@@ -38,9 +45,10 @@ function App() {
   }, [])
 
   const navItems: { id: Page; label: string; icon: typeof HomeIcon; iconActive: typeof HomeIconSolid }[] = [
-    { id: 'home', label: 'Focus', icon: HomeIcon, iconActive: HomeIconSolid },
-    { id: 'features', label: 'Features', icon: SparklesIcon, iconActive: SparklesIconSolid },
-    { id: 'settings', label: 'Settings', icon: Cog6ToothIcon, iconActive: Cog6ToothIconSolid }
+    { id: 'overview', label: 'Overview', icon: HomeIcon, iconActive: HomeIconSolid },
+    { id: 'capabilities', label: 'Capabilities', icon: BoltIcon, iconActive: BoltIconSolid },
+    { id: 'compare', label: 'Compare', icon: ScaleIcon, iconActive: ScaleIconSolid },
+    { id: 'howto', label: 'How-To', icon: BookOpenIcon, iconActive: BookOpenIconSolid }
   ]
 
   return (
@@ -53,21 +61,36 @@ function App() {
         <div className="max-w-lg mx-auto px-4 h-14 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
-              <SparklesIcon className="w-5 h-5 text-white" />
+              <BoltIcon className="w-5 h-5 text-white" />
             </div>
-            <span className="font-semibold text-slate-900 dark:text-white">Daily Focus</span>
+            <span className="font-semibold text-slate-900 dark:text-white">PWA Demo</span>
           </div>
 
-          {!isInstalled && (
-            <InstallButton variant="secondary" />
-          )}
+          <div className="flex items-center gap-2">
+            {!isInstalled && (
+              <InstallButton variant="secondary" />
+            )}
+            <button
+              onClick={() => setCurrentPage('settings')}
+              className={`p-2 rounded-lg transition-colors ${
+                currentPage === 'settings'
+                  ? 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400'
+                  : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+              }`}
+              aria-label="Settings"
+            >
+              <Cog6ToothIcon className="w-5 h-5" />
+            </button>
+          </div>
         </div>
       </header>
 
       {/* Main Content */}
       <main className="max-w-lg mx-auto px-4 py-6 pb-24">
-        {currentPage === 'home' && <Home />}
-        {currentPage === 'features' && <Features />}
+        {currentPage === 'overview' && <Overview />}
+        {currentPage === 'capabilities' && <Capabilities />}
+        {currentPage === 'compare' && <Compare />}
+        {currentPage === 'howto' && <HowTo />}
         {currentPage === 'settings' && <Settings />}
       </main>
 
@@ -81,7 +104,7 @@ function App() {
                 <button
                   key={id}
                   onClick={() => setCurrentPage(id)}
-                  className={`flex flex-col items-center gap-1 py-2 px-4 rounded-xl transition-colors ${
+                  className={`flex flex-col items-center gap-1 py-2 px-3 rounded-xl transition-colors ${
                     isActive
                       ? 'text-indigo-600 dark:text-indigo-400'
                       : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
