@@ -11,14 +11,32 @@ interface UseInstallPromptReturn {
   isIOS: boolean
   installPrompt: () => Promise<void>
   dismissPrompt: () => void
+  resetDismissed: () => void
   wasPromptDismissed: boolean
+  canShowNativePrompt: boolean
 }
+
+const DISMISS_DURATION_DAYS = 7 // Re-show prompt after 7 days
 
 export function useInstallPrompt(): UseInstallPromptReturn {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null)
   const [isInstalled, setIsInstalled] = useState(false)
   const [wasPromptDismissed, setWasPromptDismissed] = useState(() => {
-    return localStorage.getItem('pwa-install-dismissed') === 'true'
+    const dismissedAt = localStorage.getItem('pwa-install-dismissed-at')
+    if (!dismissedAt) return false
+
+    // Check if dismiss has expired
+    const dismissedTime = parseInt(dismissedAt, 10)
+    const now = Date.now()
+    const daysSinceDismiss = (now - dismissedTime) / (1000 * 60 * 60 * 24)
+
+    if (daysSinceDismiss >= DISMISS_DURATION_DAYS) {
+      // Dismiss has expired, clear it
+      localStorage.removeItem('pwa-install-dismissed-at')
+      return false
+    }
+
+    return true
   })
 
   // Check if running in standalone mode (already installed)
@@ -48,7 +66,7 @@ export function useInstallPrompt(): UseInstallPromptReturn {
     const handleAppInstalled = () => {
       setIsInstalled(true)
       setDeferredPrompt(null)
-      localStorage.removeItem('pwa-install-dismissed')
+      localStorage.removeItem('pwa-install-dismissed-at')
     }
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
@@ -80,7 +98,12 @@ export function useInstallPrompt(): UseInstallPromptReturn {
 
   const dismissPrompt = useCallback(() => {
     setWasPromptDismissed(true)
-    localStorage.setItem('pwa-install-dismissed', 'true')
+    localStorage.setItem('pwa-install-dismissed-at', Date.now().toString())
+  }, [])
+
+  const resetDismissed = useCallback(() => {
+    setWasPromptDismissed(false)
+    localStorage.removeItem('pwa-install-dismissed-at')
   }, [])
 
   // Detect iOS for manual install instructions
@@ -93,6 +116,9 @@ export function useInstallPrompt(): UseInstallPromptReturn {
     isIOS,
     installPrompt,
     dismissPrompt,
-    wasPromptDismissed
+    resetDismissed,
+    wasPromptDismissed,
+    // True if we have a deferred prompt ready to show
+    canShowNativePrompt: !!deferredPrompt
   }
 }
