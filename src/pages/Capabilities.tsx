@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   CheckCircleIcon,
   XCircleIcon,
@@ -31,13 +31,33 @@ interface CapabilityDemo {
   result?: string
 }
 
-export function Capabilities() {
+type Category = 'core' | 'device' | 'engagement'
+
+interface CapabilitiesProps {
+  initialTab?: Category
+  onTabChange?: (tab: Category) => void
+}
+
+export function Capabilities({ initialTab, onTabChange }: CapabilitiesProps) {
   const pwaStatus = usePWAStatus()
   const isOnline = useOnlineStatus()
   const { isInstalled } = useInstallPrompt()
 
   const [results, setResults] = useState<Record<string, string>>({})
-  const [activeCategory, setActiveCategory] = useState<'core' | 'device' | 'engagement'>('core')
+  const [activeCategory, setActiveCategory] = useState<Category>(initialTab || 'core')
+
+  // Sync with URL when initialTab changes (browser back/forward)
+  useEffect(() => {
+    if (initialTab && initialTab !== activeCategory) {
+      setActiveCategory(initialTab)
+    }
+  }, [initialTab])
+
+  // Handle tab change and update URL
+  const handleCategoryChange = (category: Category) => {
+    setActiveCategory(category)
+    onTabChange?.(category)
+  }
 
   const setResult = (id: string, result: string) => {
     setResults(prev => ({ ...prev, [id]: result }))
@@ -440,7 +460,7 @@ export function Capabilities() {
         {categories.map(cat => (
           <button
             key={cat.id}
-            onClick={() => setActiveCategory(cat.id)}
+            onClick={() => handleCategoryChange(cat.id)}
             className={`flex-1 py-2 px-3 text-sm font-medium rounded-lg transition-colors ${
               activeCategory === cat.id
                 ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm'

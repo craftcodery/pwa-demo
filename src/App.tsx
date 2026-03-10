@@ -19,23 +19,34 @@ import { useInstallPrompt } from './hooks'
 
 type Page = 'overview' | 'capabilities' | 'compare' | 'howto' | 'settings'
 
+interface RouteState {
+  page: Page
+  tab?: string
+}
+
 function App() {
-  const [currentPage, setCurrentPage] = useState<Page>('overview')
+  const [route, setRoute] = useState<RouteState>({ page: 'overview' })
   const { isInstalled } = useInstallPrompt()
 
-  // Map hash values to pages (supports aliases for shortcuts/share targets)
-  const hashToPage = (hash: string): Page => {
-    const normalized = hash.toLowerCase()
-    if (normalized === 'capabilities' || normalized === 'features') return 'capabilities'
-    if (normalized === 'compare') return 'compare'
-    if (normalized === 'howto' || normalized === 'how-to') return 'howto'
-    if (normalized === 'settings') return 'settings'
-    return 'overview' // Default for '', 'overview', 'add', 'today', 'share', etc.
+  // Parse hash into page and optional tab
+  const parseHash = (hash: string): RouteState => {
+    const parts = hash.toLowerCase().split('/').filter(Boolean)
+    const pagePart = parts[0] || ''
+    const tabPart = parts[1]
+
+    let page: Page = 'overview'
+    if (pagePart === 'capabilities' || pagePart === 'features') page = 'capabilities'
+    else if (pagePart === 'compare') page = 'compare'
+    else if (pagePart === 'howto' || pagePart === 'how-to') page = 'howto'
+    else if (pagePart === 'settings') page = 'settings'
+
+    return { page, tab: tabPart }
   }
 
-  // Navigate to a page by updating the URL hash
-  const navigateTo = (page: Page) => {
-    const newHash = page === 'overview' ? '#/' : `#/${page}`
+  // Navigate to a page (and optional tab) by updating the URL hash
+  const navigateTo = (page: Page, tab?: string) => {
+    let newHash = page === 'overview' ? '#/' : `#/${page}`
+    if (tab) newHash += `/${tab}`
     if (window.location.hash !== newHash) {
       window.location.hash = newHash
     }
@@ -45,7 +56,7 @@ function App() {
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.slice(2) // Remove #/
-      setCurrentPage(hashToPage(hash))
+      setRoute(parseHash(hash))
     }
 
     handleHashChange()
@@ -67,7 +78,7 @@ function App() {
     iconActive: typeof HomeIconSolid
     isSidebar?: boolean
   }) => {
-    const isActive = currentPage === id
+    const isActive = route.page === id
 
     if (isSidebar) {
       return (
@@ -157,7 +168,7 @@ function App() {
             <button
               onClick={() => navigateTo('settings')}
               className={`p-2 rounded-lg transition-colors ${
-                currentPage === 'settings'
+                route.page === 'settings'
                   ? 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400'
                   : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
               }`}
@@ -172,11 +183,21 @@ function App() {
       {/* Main Content */}
       <main className="md:ml-64 px-4 py-6 pb-24 md:pb-6">
         <div className="max-w-2xl mx-auto">
-          {currentPage === 'overview' && <Overview />}
-          {currentPage === 'capabilities' && <Capabilities />}
-          {currentPage === 'compare' && <Compare />}
-          {currentPage === 'howto' && <HowTo />}
-          {currentPage === 'settings' && <Settings />}
+          {route.page === 'overview' && <Overview />}
+          {route.page === 'capabilities' && (
+            <Capabilities
+              initialTab={route.tab as 'core' | 'device' | 'engagement' | undefined}
+              onTabChange={(tab) => navigateTo('capabilities', tab)}
+            />
+          )}
+          {route.page === 'compare' && <Compare />}
+          {route.page === 'howto' && (
+            <HowTo
+              initialSection={route.tab as 'install' | 'uninstall' | 'permissions' | 'testing' | undefined}
+              onSectionChange={(section) => navigateTo('howto', section)}
+            />
+          )}
+          {route.page === 'settings' && <Settings />}
         </div>
       </main>
 

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   DevicePhoneMobileIcon,
   ShieldCheckIcon,
@@ -42,9 +42,27 @@ function Accordion({ title, children, defaultOpen = false }: AccordionProps) {
   )
 }
 
-export function HowTo() {
-  const [activeSection, setActiveSection] = useState<Section>('install')
+interface HowToProps {
+  initialSection?: Section
+  onSectionChange?: (section: Section) => void
+}
+
+export function HowTo({ initialSection, onSectionChange }: HowToProps) {
+  const [activeSection, setActiveSection] = useState<Section>(initialSection || 'install')
   const { isInstalled, installPrompt, isInstallable, resetDismissed } = useInstallPrompt()
+
+  // Sync with URL when initialSection changes (browser back/forward)
+  useEffect(() => {
+    if (initialSection && initialSection !== activeSection) {
+      setActiveSection(initialSection)
+    }
+  }, [initialSection])
+
+  // Handle section change and update URL
+  const handleSectionChange = (section: Section) => {
+    setActiveSection(section)
+    onSectionChange?.(section)
+  }
 
   const sections = [
     { id: 'install', label: 'Install', icon: DevicePhoneMobileIcon },
@@ -69,7 +87,7 @@ export function HowTo() {
         {sections.map(section => (
           <button
             key={section.id}
-            onClick={() => setActiveSection(section.id)}
+            onClick={() => handleSectionChange(section.id)}
             className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-3 text-sm font-medium rounded-lg transition-colors whitespace-nowrap ${
               activeSection === section.id
                 ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm'
