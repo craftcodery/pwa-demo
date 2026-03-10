@@ -45,8 +45,8 @@ export function Overview() {
 
   const stats = [
     { value: '68%', label: 'of web traffic is mobile', source: 'Statista 2024' },
-    { value: '50%', label: 'lower development cost vs native', source: 'Industry avg' },
-    { value: '3x', label: 'faster time to market', source: 'Compared to native' },
+    { value: '50%', label: 'lower cost vs separate native apps', source: 'Industry avg' },
+    { value: '3x', label: 'faster time to market', source: 'vs native development' },
     { value: '36%', label: 'higher conversion rates', source: 'Google case studies' }
   ]
 
@@ -143,25 +143,25 @@ export function Overview() {
       {/* When to Consider */}
       <div className="p-5 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700">
         <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-3">
-          When to Consider a PWA
+          PWA is a Good Fit When...
         </h2>
         <div className="space-y-3">
           <div className="flex items-start gap-2">
             <ShieldCheckIcon className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-0.5" />
             <p className="text-sm text-slate-600 dark:text-slate-400">
-              <strong className="text-slate-900 dark:text-white">Cross-platform reach</strong> - You need to support iOS, Android, and desktop
+              <strong className="text-slate-900 dark:text-white">You have a web team</strong> - Leverage existing HTML/CSS/JS skills
             </p>
           </div>
           <div className="flex items-start gap-2">
             <ShieldCheckIcon className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-0.5" />
             <p className="text-sm text-slate-600 dark:text-slate-400">
-              <strong className="text-slate-900 dark:text-white">Rapid iteration</strong> - You want to deploy updates without app store delays
+              <strong className="text-slate-900 dark:text-white">SEO matters</strong> - PWAs are fully indexable by search engines
             </p>
           </div>
           <div className="flex items-start gap-2">
             <ShieldCheckIcon className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-0.5" />
             <p className="text-sm text-slate-600 dark:text-slate-400">
-              <strong className="text-slate-900 dark:text-white">Budget constraints</strong> - One team maintaining one codebase
+              <strong className="text-slate-900 dark:text-white">Skip app stores</strong> - Deploy updates instantly, no review process
             </p>
           </div>
           <div className="flex items-start gap-2">
@@ -171,12 +171,17 @@ export function Overview() {
             </p>
           </div>
         </div>
+        <div className="mt-4 p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl">
+          <p className="text-xs text-slate-500 dark:text-slate-400">
+            <strong>Consider alternatives</strong> if you need: full Bluetooth/NFC, background location, App Store presence, or graphics-intensive features. See the <strong>Compare</strong> tab for PWA vs Cross-Platform vs Native.
+          </p>
+        </div>
       </div>
 
       {/* Call to Action */}
       <div className="text-center text-sm text-slate-500 dark:text-slate-400 pb-4">
         <p>Explore the <strong>Capabilities</strong> tab to try PWA features,</p>
-        <p>or check <strong>Compare</strong> for an honest PWA vs Native breakdown.</p>
+        <p>or check <strong>Compare</strong> for PWA vs Cross-Platform vs Native.</p>
       </div>
     </div>
   )
