@@ -43,10 +43,30 @@ export function Capabilities() {
     setResults(prev => ({ ...prev, [id]: result }))
   }
 
+  // Helper to check permission state via Permissions API
+  const checkPermission = async (name: PermissionName): Promise<PermissionState | 'unsupported'> => {
+    if (!navigator.permissions?.query) {
+      return 'unsupported'
+    }
+    try {
+      const result = await navigator.permissions.query({ name })
+      return result.state
+    } catch {
+      return 'unsupported'
+    }
+  }
+
   // Test functions
   const testNotifications = async () => {
     if (!('Notification' in window)) {
       setResult('notifications', 'Not supported in this browser')
+      return
+    }
+
+    // Check current permission state
+    const currentState = Notification.permission
+    if (currentState === 'denied') {
+      setResult('notifications', 'Permission blocked. Reset in browser settings: click lock icon in URL bar → Site settings → Notifications → Allow')
       return
     }
 
@@ -58,8 +78,10 @@ export function Capabilities() {
           icon: '/pwa-demo/icons/icon-192x192.png'
         })
         setResult('notifications', 'Permission granted - notification sent!')
+      } else if (permission === 'denied') {
+        setResult('notifications', 'Permission denied. To reset: click lock icon in URL bar → Site settings → Notifications → Allow')
       } else {
-        setResult('notifications', `Permission: ${permission}`)
+        setResult('notifications', 'Permission dismissed - try again')
       }
     } catch (e) {
       setResult('notifications', `Error: ${e}`)
@@ -112,17 +134,36 @@ export function Capabilities() {
       return
     }
 
+    // Check current permission state (clipboard-write is auto-granted in most browsers for active tab)
+    const permState = await checkPermission('clipboard-write' as PermissionName)
+    if (permState === 'denied') {
+      setResult('clipboard', 'Permission blocked. To reset: click lock icon in URL bar → Site settings → Clipboard → Allow')
+      return
+    }
+
     try {
       await navigator.clipboard.writeText('Hello from PWA Demo!')
       setResult('clipboard', 'Text copied to clipboard!')
     } catch (e) {
-      setResult('clipboard', `Error: ${(e as Error).message}`)
+      const error = e as Error
+      if (error.name === 'NotAllowedError') {
+        setResult('clipboard', 'Permission denied. Clipboard access requires user interaction or permission grant.')
+      } else {
+        setResult('clipboard', `Error: ${error.message}`)
+      }
     }
   }
 
-  const testGeolocation = () => {
+  const testGeolocation = async () => {
     if (!navigator.geolocation) {
       setResult('geolocation', 'Geolocation not supported')
+      return
+    }
+
+    // Check current permission state first
+    const permState = await checkPermission('geolocation')
+    if (permState === 'denied') {
+      setResult('geolocation', 'Permission blocked. To reset: click lock icon in URL bar → Site settings → Location → Allow')
       return
     }
 
@@ -132,8 +173,17 @@ export function Capabilities() {
         setResult('geolocation', `Lat: ${pos.coords.latitude.toFixed(4)}, Lng: ${pos.coords.longitude.toFixed(4)}`)
       },
       (err) => {
-        setResult('geolocation', `Error: ${err.message}`)
-      }
+        if (err.code === err.PERMISSION_DENIED) {
+          setResult('geolocation', 'Permission denied. To reset: click lock icon in URL bar → Site settings → Location → Allow')
+        } else if (err.code === err.POSITION_UNAVAILABLE) {
+          setResult('geolocation', 'Location unavailable - check device GPS settings')
+        } else if (err.code === err.TIMEOUT) {
+          setResult('geolocation', 'Location request timed out - try again')
+        } else {
+          setResult('geolocation', `Error: ${err.message}`)
+        }
+      },
+      { timeout: 10000 }
     )
   }
 
@@ -153,12 +203,28 @@ export function Capabilities() {
       return
     }
 
+    // Check current permission state first
+    const permState = await checkPermission('camera' as PermissionName)
+    if (permState === 'denied') {
+      setResult('camera', 'Permission blocked. To reset: click lock icon in URL bar → Site settings → Camera → Allow')
+      return
+    }
+
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true })
       stream.getTracks().forEach(track => track.stop())
       setResult('camera', 'Camera access granted!')
     } catch (e) {
-      setResult('camera', `Error: ${(e as Error).message}`)
+      const error = e as Error
+      if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
+        setResult('camera', 'Permission denied. To reset: click lock icon in URL bar → Site settings → Camera → Allow')
+      } else if (error.name === 'NotFoundError') {
+        setResult('camera', 'No camera found on this device')
+      } else if (error.name === 'NotReadableError') {
+        setResult('camera', 'Camera is in use by another application')
+      } else {
+        setResult('camera', `Error: ${error.message}`)
+      }
     }
   }
 
