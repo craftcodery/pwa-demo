@@ -23,21 +23,29 @@ function App() {
   const [currentPage, setCurrentPage] = useState<Page>('overview')
   const { isInstalled } = useInstallPrompt()
 
-  // Handle hash-based routing for share_target and shortcuts
+  // Map hash values to pages (supports aliases for shortcuts/share targets)
+  const hashToPage = (hash: string): Page => {
+    const normalized = hash.toLowerCase()
+    if (normalized === 'capabilities' || normalized === 'features') return 'capabilities'
+    if (normalized === 'compare') return 'compare'
+    if (normalized === 'howto' || normalized === 'how-to') return 'howto'
+    if (normalized === 'settings') return 'settings'
+    return 'overview' // Default for '', 'overview', 'add', 'today', 'share', etc.
+  }
+
+  // Navigate to a page by updating the URL hash
+  const navigateTo = (page: Page) => {
+    const newHash = page === 'overview' ? '#/' : `#/${page}`
+    if (window.location.hash !== newHash) {
+      window.location.hash = newHash
+    }
+  }
+
+  // Handle hash-based routing
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.slice(2) // Remove #/
-      if (hash === 'overview' || hash === '' || hash === 'add' || hash === 'today' || hash === 'share') {
-        setCurrentPage('overview')
-      } else if (hash === 'capabilities' || hash === 'features') {
-        setCurrentPage('capabilities')
-      } else if (hash === 'compare') {
-        setCurrentPage('compare')
-      } else if (hash === 'howto' || hash === 'how-to') {
-        setCurrentPage('howto')
-      } else if (hash === 'settings') {
-        setCurrentPage('settings')
-      }
+      setCurrentPage(hashToPage(hash))
     }
 
     handleHashChange()
@@ -64,7 +72,7 @@ function App() {
     if (isSidebar) {
       return (
         <button
-          onClick={() => setCurrentPage(id)}
+          onClick={() => navigateTo(id)}
           className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
             isActive
               ? 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400'
@@ -79,7 +87,7 @@ function App() {
 
     return (
       <button
-        onClick={() => setCurrentPage(id)}
+        onClick={() => navigateTo(id)}
         className={`flex flex-col items-center gap-1 py-2 px-3 rounded-xl transition-colors ${
           isActive
             ? 'text-indigo-600 dark:text-indigo-400'
@@ -147,7 +155,7 @@ function App() {
               <InstallButton variant="secondary" />
             )}
             <button
-              onClick={() => setCurrentPage('settings')}
+              onClick={() => navigateTo('settings')}
               className={`p-2 rounded-lg transition-colors ${
                 currentPage === 'settings'
                   ? 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400'
