@@ -66,9 +66,22 @@ export function Capabilities() {
     // Check current permission state
     const currentState = Notification.permission
     if (currentState === 'denied') {
-      setResult('notifications', 'Permission blocked. Reset in browser settings: click lock icon in URL bar → Site settings → Notifications → Allow')
+      setResult('notifications', 'Permission blocked. To reset: click lock icon in URL bar → Site settings → Notifications → Allow')
       return
     }
+
+    if (currentState === 'granted') {
+      // Already have permission, just send notification
+      new Notification('PWA Demo', {
+        body: 'Notifications are working!',
+        icon: '/pwa-demo/icons/icon-192x192.png'
+      })
+      setResult('notifications', 'Permission already granted - notification sent!')
+      return
+    }
+
+    // Need to request permission
+    setResult('notifications', 'Requesting permission... (check for browser prompt)')
 
     try {
       const permission = await Notification.requestPermission()
@@ -81,7 +94,7 @@ export function Capabilities() {
       } else if (permission === 'denied') {
         setResult('notifications', 'Permission denied. To reset: click lock icon in URL bar → Site settings → Notifications → Allow')
       } else {
-        setResult('notifications', 'Permission dismissed - try again')
+        setResult('notifications', 'Permission dismissed (closed without choosing). Try again and click Allow.')
       }
     } catch (e) {
       setResult('notifications', `Error: ${e}`)
@@ -116,15 +129,27 @@ export function Capabilities() {
       return
     }
 
+    // Note: Badges work best when app is installed. On some platforms, may require notification permission.
     try {
       await navigator.setAppBadge(5)
-      setResult('badge', 'Badge set to 5 - check your app icon!')
+      setResult('badge', 'Badge set to 5! Check your app icon (works best when installed as PWA).')
       setTimeout(async () => {
-        await navigator.clearAppBadge()
-        setResult('badge', 'Badge cleared after 3 seconds')
+        try {
+          await navigator.clearAppBadge()
+          setResult('badge', 'Badge cleared after 3 seconds')
+        } catch {
+          // Ignore clear errors
+        }
       }, 3000)
     } catch (e) {
-      setResult('badge', `Error: ${e}`)
+      const error = e as Error
+      if (error.name === 'NotAllowedError') {
+        setResult('badge', 'Badge permission denied. Try installing the app first, or grant notification permission.')
+      } else if (error.name === 'SecurityError') {
+        setResult('badge', 'Security error. Badges work best when app is installed as PWA.')
+      } else {
+        setResult('badge', `Error: ${error.message || e}`)
+      }
     }
   }
 
@@ -143,11 +168,13 @@ export function Capabilities() {
 
     try {
       await navigator.clipboard.writeText('Hello from PWA Demo!')
-      setResult('clipboard', 'Text copied to clipboard!')
+      setResult('clipboard', 'Text "Hello from PWA Demo!" copied to clipboard! Try pasting somewhere.')
     } catch (e) {
       const error = e as Error
       if (error.name === 'NotAllowedError') {
-        setResult('clipboard', 'Permission denied. Clipboard access requires user interaction or permission grant.')
+        setResult('clipboard', 'Permission denied. This usually requires a user gesture (click). Try clicking the button again.')
+      } else if (error.name === 'SecurityError') {
+        setResult('clipboard', 'Security error. Clipboard requires HTTPS and document focus.')
       } else {
         setResult('clipboard', `Error: ${error.message}`)
       }
@@ -167,23 +194,29 @@ export function Capabilities() {
       return
     }
 
-    setResult('geolocation', 'Requesting location...')
+    if (permState === 'granted') {
+      setResult('geolocation', 'Permission granted. Getting location...')
+    } else {
+      setResult('geolocation', 'Requesting permission... (check for browser prompt)')
+    }
+
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         setResult('geolocation', `Lat: ${pos.coords.latitude.toFixed(4)}, Lng: ${pos.coords.longitude.toFixed(4)}`)
       },
       (err) => {
         if (err.code === err.PERMISSION_DENIED) {
-          setResult('geolocation', 'Permission denied. To reset: click lock icon in URL bar → Site settings → Location → Allow')
+          // Permission was denied - could be browser-level block (Brave shields, etc.)
+          setResult('geolocation', 'Permission denied. Check: (1) Browser shields/privacy settings (2) Click lock icon → Site settings → Location → Allow (3) Browser settings → Privacy → Location')
         } else if (err.code === err.POSITION_UNAVAILABLE) {
-          setResult('geolocation', 'Location unavailable - check device GPS settings')
+          setResult('geolocation', 'Location unavailable - check device GPS/location settings')
         } else if (err.code === err.TIMEOUT) {
           setResult('geolocation', 'Location request timed out - try again')
         } else {
           setResult('geolocation', `Error: ${err.message}`)
         }
       },
-      { timeout: 10000 }
+      { timeout: 10000, enableHighAccuracy: false }
     )
   }
 
@@ -210,6 +243,12 @@ export function Capabilities() {
       return
     }
 
+    if (permState === 'granted') {
+      setResult('camera', 'Permission granted. Accessing camera...')
+    } else {
+      setResult('camera', 'Requesting permission... (check for browser prompt)')
+    }
+
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true })
       stream.getTracks().forEach(track => track.stop())
@@ -225,6 +264,26 @@ export function Capabilities() {
       } else {
         setResult('camera', `Error: ${error.message}`)
       }
+    }
+  }
+
+  const testBiometrics = async () => {
+    if (!window.PublicKeyCredential) {
+      setResult('biometrics', 'WebAuthn not supported in this browser')
+      return
+    }
+
+    // Check if platform authenticator (biometrics) is available
+    try {
+      const available = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()
+      if (!available) {
+        setResult('biometrics', 'No biometric authenticator available on this device')
+        return
+      }
+
+      setResult('biometrics', 'Biometric authenticator available! In production, you would register/authenticate credentials here.')
+    } catch (e) {
+      setResult('biometrics', `Error checking availability: ${(e as Error).message}`)
     }
   }
 
@@ -338,7 +397,9 @@ export function Capabilities() {
       icon: FingerPrintIcon,
       description: 'Face ID, Touch ID, fingerprint authentication',
       browserSupport: 'Via Web Authentication API (WebAuthn)',
-      status: window.PublicKeyCredential ? 'supported' : 'unsupported'
+      status: window.PublicKeyCredential ? 'supported' : 'unsupported',
+      action: testBiometrics,
+      actionLabel: 'Check Availability'
     }
   ]
 
