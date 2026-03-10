@@ -8,6 +8,7 @@ import {
 } from '@heroicons/react/24/outline'
 import {
   HomeIcon as HomeIconSolid,
+  Cog6ToothIcon as Cog6ToothIconSolid,
   BoltIcon as BoltIconSolid,
   ScaleIcon as ScaleIconSolid,
   BookOpenIcon as BookOpenIconSolid
@@ -51,14 +52,89 @@ function App() {
     { id: 'howto', label: 'How-To', icon: BookOpenIcon, iconActive: BookOpenIconSolid }
   ]
 
+  const NavButton = ({ id, label, icon: Icon, iconActive: IconActive, isSidebar = false }: {
+    id: Page
+    label: string
+    icon: typeof HomeIcon
+    iconActive: typeof HomeIconSolid
+    isSidebar?: boolean
+  }) => {
+    const isActive = currentPage === id
+
+    if (isSidebar) {
+      return (
+        <button
+          onClick={() => setCurrentPage(id)}
+          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
+            isActive
+              ? 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400'
+              : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
+          }`}
+        >
+          {isActive ? <IconActive className="w-5 h-5" /> : <Icon className="w-5 h-5" />}
+          <span className="font-medium">{label}</span>
+        </button>
+      )
+    }
+
+    return (
+      <button
+        onClick={() => setCurrentPage(id)}
+        className={`flex flex-col items-center gap-1 py-2 px-3 rounded-xl transition-colors ${
+          isActive
+            ? 'text-indigo-600 dark:text-indigo-400'
+            : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
+        }`}
+      >
+        {isActive ? <IconActive className="w-6 h-6" /> : <Icon className="w-6 h-6" />}
+        <span className="text-xs font-medium">{label}</span>
+      </button>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
       {/* Offline Indicator */}
       <OfflineIndicator />
 
-      {/* Header */}
-      <header className="sticky top-0 z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur-lg border-b border-slate-200 dark:border-slate-800 safe-area-top">
-        <div className="max-w-lg mx-auto px-4 h-14 flex items-center justify-between">
+      {/* Desktop Sidebar - hidden on mobile */}
+      <aside className="hidden md:flex md:flex-col md:fixed md:inset-y-0 md:left-0 md:w-64 md:bg-white md:dark:bg-slate-800 md:border-r md:border-slate-200 md:dark:border-slate-700">
+        {/* Sidebar Header */}
+        <div className="flex items-center gap-2 px-4 h-16 border-b border-slate-200 dark:border-slate-700">
+          <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+            <BoltIcon className="w-5 h-5 text-white" />
+          </div>
+          <div>
+            <span className="font-semibold text-slate-900 dark:text-white">PWA Demo</span>
+            <p className="text-xs text-slate-500 dark:text-slate-400">Capability Showcase</p>
+          </div>
+        </div>
+
+        {/* Sidebar Navigation */}
+        <nav className="flex-1 px-3 py-4 space-y-1">
+          {navItems.map((item) => (
+            <NavButton key={item.id} {...item} isSidebar />
+          ))}
+        </nav>
+
+        {/* Sidebar Footer */}
+        <div className="px-3 py-4 border-t border-slate-200 dark:border-slate-700 space-y-2">
+          {!isInstalled && (
+            <InstallButton variant="primary" className="w-full justify-center" />
+          )}
+          <NavButton
+            id="settings"
+            label="Settings"
+            icon={Cog6ToothIcon}
+            iconActive={Cog6ToothIconSolid}
+            isSidebar
+          />
+        </div>
+      </aside>
+
+      {/* Mobile Header - hidden on desktop */}
+      <header className="md:hidden sticky top-0 z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur-lg border-b border-slate-200 dark:border-slate-800 safe-area-top">
+        <div className="px-4 h-14 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
               <BoltIcon className="w-5 h-5 text-white" />
@@ -86,39 +162,23 @@ function App() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-lg mx-auto px-4 py-6 pb-24">
-        {currentPage === 'overview' && <Overview />}
-        {currentPage === 'capabilities' && <Capabilities />}
-        {currentPage === 'compare' && <Compare />}
-        {currentPage === 'howto' && <HowTo />}
-        {currentPage === 'settings' && <Settings />}
+      <main className="md:ml-64 px-4 py-6 pb-24 md:pb-6">
+        <div className="max-w-2xl mx-auto">
+          {currentPage === 'overview' && <Overview />}
+          {currentPage === 'capabilities' && <Capabilities />}
+          {currentPage === 'compare' && <Compare />}
+          {currentPage === 'howto' && <HowTo />}
+          {currentPage === 'settings' && <Settings />}
+        </div>
       </main>
 
-      {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur-lg border-t border-slate-200 dark:border-slate-800 safe-area-bottom">
-        <div className="max-w-lg mx-auto px-4">
+      {/* Mobile Bottom Navigation - hidden on desktop */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur-lg border-t border-slate-200 dark:border-slate-800 safe-area-bottom">
+        <div className="px-4">
           <div className="flex items-center justify-around h-16">
-            {navItems.map(({ id, label, icon: Icon, iconActive: IconActive }) => {
-              const isActive = currentPage === id
-              return (
-                <button
-                  key={id}
-                  onClick={() => setCurrentPage(id)}
-                  className={`flex flex-col items-center gap-1 py-2 px-3 rounded-xl transition-colors ${
-                    isActive
-                      ? 'text-indigo-600 dark:text-indigo-400'
-                      : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
-                  }`}
-                >
-                  {isActive ? (
-                    <IconActive className="w-6 h-6" />
-                  ) : (
-                    <Icon className="w-6 h-6" />
-                  )}
-                  <span className="text-xs font-medium">{label}</span>
-                </button>
-              )
-            })}
+            {navItems.map((item) => (
+              <NavButton key={item.id} {...item} />
+            ))}
           </div>
         </div>
       </nav>
