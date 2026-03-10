@@ -293,7 +293,7 @@ export function Capabilities() {
       name: 'Service Worker',
       icon: BoltIcon,
       description: 'Background scripts for offline caching and push notifications',
-      browserSupport: 'All modern browsers',
+      browserSupport: 'Chrome 40+, Edge 17+, Firefox 44+, Safari 11.1+',
       status: pwaStatus.serviceWorkerStatus === 'active' ? 'supported' : 'partial'
     },
     {
@@ -301,7 +301,7 @@ export function Capabilities() {
       name: 'Offline Support',
       icon: WifiIcon,
       description: 'App works without internet connection',
-      browserSupport: 'All modern browsers',
+      browserSupport: 'All browsers with Service Worker support (~96%)',
       status: isOnline ? 'supported' : 'supported',
       actionLabel: isOnline ? 'You are online' : 'You are offline - app still works!'
     },
@@ -310,7 +310,7 @@ export function Capabilities() {
       name: 'Installable',
       icon: DevicePhoneMobileIcon,
       description: 'Add to home screen like a native app',
-      browserSupport: 'Chrome, Edge, Safari 17+, Samsung Internet',
+      browserSupport: 'Chrome/Edge (prompt), Safari 17+ (Add to Dock), iOS (Add to Home Screen)',
       status: isInstalled ? 'supported' : 'partial',
       actionLabel: isInstalled ? 'App is installed!' : 'Install via browser or banner'
     }
@@ -322,7 +322,7 @@ export function Capabilities() {
       name: 'Push Notifications',
       icon: BellIcon,
       description: 'Send notifications even when app is closed',
-      browserSupport: 'Chrome, Edge, Firefox, Safari 16.4+',
+      browserSupport: 'Chrome 50+, Edge 17+, Firefox 44+, Safari 16+ (iOS: PWA only, 16.4+)',
       status: pwaStatus.notificationPermission === 'granted' ? 'supported' :
               pwaStatus.notificationPermission === 'unsupported' ? 'unsupported' : 'partial',
       action: testNotifications,
@@ -333,7 +333,7 @@ export function Capabilities() {
       name: 'App Badges',
       icon: Square3Stack3DIcon,
       description: 'Show notification count on app icon',
-      browserSupport: 'Chrome, Edge, Safari 16.4+ (installed apps only)',
+      browserSupport: 'Chrome 81+, Edge 81+, Safari iOS 16.4+ (installed PWAs only)',
       status: pwaStatus.hasBadgingAPI ? 'supported' : 'unsupported',
       action: testBadge,
       actionLabel: 'Set Badge'
@@ -343,7 +343,7 @@ export function Capabilities() {
       name: 'Web Share',
       icon: ShareIcon,
       description: 'Share content using native share dialog',
-      browserSupport: 'Chrome, Edge, Safari, Firefox (mobile)',
+      browserSupport: 'Chrome 89+, Edge 93+, Safari 12.1+, Firefox mobile only',
       status: pwaStatus.canShare ? 'supported' : 'unsupported',
       action: testShare,
       actionLabel: 'Share This Page'
@@ -356,7 +356,7 @@ export function Capabilities() {
       name: 'Clipboard',
       icon: ClipboardIcon,
       description: 'Read and write to system clipboard',
-      browserSupport: 'All modern browsers (HTTPS required)',
+      browserSupport: 'All modern browsers (HTTPS + user gesture required)',
       status: navigator.clipboard ? 'supported' : 'unsupported',
       action: testClipboard,
       actionLabel: 'Copy Text'
@@ -365,8 +365,8 @@ export function Capabilities() {
       id: 'geolocation',
       name: 'Geolocation',
       icon: MapPinIcon,
-      description: 'Access device GPS location',
-      browserSupport: 'All modern browsers',
+      description: 'Access device GPS location (foreground only)',
+      browserSupport: 'All browsers (no background/geofencing in PWAs)',
       status: navigator.geolocation ? 'supported' : 'unsupported',
       action: testGeolocation,
       actionLabel: 'Get Location'
@@ -386,7 +386,7 @@ export function Capabilities() {
       name: 'Vibration',
       icon: SpeakerWaveIcon,
       description: 'Haptic feedback on supported devices',
-      browserSupport: 'Chrome, Edge, Firefox, Opera (not Safari)',
+      browserSupport: 'Chrome, Edge, Firefox, Opera (not Safari/iOS)',
       status: 'vibrate' in navigator ? 'supported' : 'unsupported',
       action: testVibration,
       actionLabel: 'Vibrate'
@@ -395,8 +395,8 @@ export function Capabilities() {
       id: 'biometrics',
       name: 'Biometric Auth',
       icon: FingerPrintIcon,
-      description: 'Face ID, Touch ID, fingerprint authentication',
-      browserSupport: 'Via Web Authentication API (WebAuthn)',
+      description: 'Face ID, Touch ID, fingerprint via WebAuthn',
+      browserSupport: 'Chrome 67+, Edge 18+, Firefox 60+, Safari 14.5+',
       status: window.PublicKeyCredential ? 'supported' : 'unsupported',
       action: testBiometrics,
       actionLabel: 'Check Availability'
