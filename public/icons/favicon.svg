@@ -1,11 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <defs>
-    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#6366f1"/>
-      <stop offset="100%" style="stop-color:#a855f7"/>
-    </linearGradient>
-  </defs>
-  <rect width="512" height="512" rx="96" fill="url(#grad)"/>
-  <path d="M256 128c-70.7 0-128 57.3-128 128s57.3 128 128 128 128-57.3 128-128-57.3-128-128-128zm0 208c-44.2 0-80-35.8-80-80s35.8-80 80-80 80 35.8 80 80-35.8 80-80 80z" fill="white" opacity="0.9"/>
-  <path d="M256 176l12 36h38l-31 22 12 36-31-22-31 22 12-36-31-22h38z" fill="white"/>
+  <rect width="512" height="512" rx="64" fill="#24554F"/>
+  <text x="256" y="200" font-family="system-ui, -apple-system, sans-serif" font-size="100" font-weight="bold" fill="white" text-anchor="middle">NORTH</text>
+  <text x="256" y="340" font-family="system-ui, -apple-system, sans-serif" font-size="100" font-weight="bold" fill="white" text-anchor="middle">BUILT</text>
 </svg>
