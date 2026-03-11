@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <rect width="512" height="512" rx="64" fill="#24554F"/>
-  <text x="256" y="200" font-family="system-ui, -apple-system, sans-serif" font-size="100" font-weight="bold" fill="white" text-anchor="middle">NORTH</text>
-  <text x="256" y="340" font-family="system-ui, -apple-system, sans-serif" font-size="100" font-weight="bold" fill="white" text-anchor="middle">BUILT</text>
+  <text x="256" y="215" font-family="system-ui, -apple-system, sans-serif" font-size="130" font-weight="700" fill="white" text-anchor="middle" letter-spacing="-2">NORTH</text>
+  <text x="256" y="355" font-family="system-ui, -apple-system, sans-serif" font-size="130" font-weight="700" fill="white" text-anchor="middle" letter-spacing="-2">BUILT</text>
 </svg>

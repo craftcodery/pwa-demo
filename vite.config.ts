@@ -98,15 +98,13 @@ export default defineConfig(({ mode }) => {
             name: 'Test Capabilities',
             short_name: 'Capabilities',
             description: 'Test PWA features and device APIs',
-            url: `${base}capabilities`,
-            icons: [{ src: 'icons/shortcut-add.png', sizes: '96x96' }]
+            url: `${base}capabilities`
           },
           {
             name: 'PWA vs Native',
             short_name: 'Compare',
             description: 'Compare PWA and native app capabilities',
-            url: `${base}compare`,
-            icons: [{ src: 'icons/shortcut-today.png', sizes: '96x96' }]
+            url: `${base}compare`
           }
         ],
         share_target: {

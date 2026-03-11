@@ -8,6 +8,7 @@ import {
   WifiIcon,
   DevicePhoneMobileIcon,
   Square3Stack3DIcon,
+  Squares2X2Icon,
   ClipboardIcon,
   MapPinIcon,
   CameraIcon,
@@ -407,6 +408,15 @@ export function Capabilities({ initialTab, onTabChange }: CapabilitiesProps) {
       status: pwaStatus.canShare ? 'supported' : 'unsupported',
       action: testShare,
       actionLabel: 'Share This Page'
+    },
+    {
+      id: 'shortcuts',
+      name: 'App Shortcuts',
+      icon: Squares2X2Icon,
+      description: 'Quick actions from app icon context menu',
+      browserSupport: 'Chrome 84+, Edge 84+, Samsung Internet, Opera (not Safari)',
+      status: 'supported',
+      actionLabel: 'Long-press or right-click installed app icon to see shortcuts'
     }
   ]
 
