@@ -50,7 +50,7 @@ function Layout() {
       <aside className="hidden md:flex md:flex-col md:fixed md:inset-y-0 md:left-0 md:w-64 md:bg-white md:dark:bg-[#505353] md:border-r md:border-[#CBCDCD] md:dark:border-[#5A5E5D]">
         <div className="flex items-center gap-2 px-4 h-16 border-b border-[#CBCDCD] dark:border-[#5A5E5D]">
           <img
-            src="/icons/icon-72x72.png"
+            src={`${import.meta.env.BASE_URL}icons/icon-72x72.png`}
             alt="NorthBuilt logo"
             className="w-9 h-9 rounded-lg"
           />
@@ -110,7 +110,7 @@ function Layout() {
         <div className="px-4 h-14 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <img
-              src="/icons/icon-72x72.png"
+              src={`${import.meta.env.BASE_URL}icons/icon-72x72.png`}
               alt="NorthBuilt logo"
               className="w-8 h-8 rounded-lg"
             />

@@ -104,7 +104,7 @@ export function ErrorBoundary() {
           <div className="px-6 py-4 bg-[#E5E6E6]/50 dark:bg-[#3C3E3E]/50 border-t border-[#CBCDCD] dark:border-[#5A5E5D]">
             <div className="flex items-center justify-center gap-2">
               <img
-                src="/icons/icon-72x72.png"
+                src={`${import.meta.env.BASE_URL}icons/icon-72x72.png`}
                 alt="NorthBuilt logo"
                 className="w-6 h-6 rounded-md"
               />
