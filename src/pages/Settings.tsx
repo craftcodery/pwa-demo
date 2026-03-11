@@ -49,33 +49,40 @@ export function Settings() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
-        Settings
-      </h1>
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-[#3C3E3E] dark:text-white">
+          Settings
+        </h1>
+        <p className="mt-2 text-sm text-[#696D6D] dark:text-[#B1B4B4]">
+          Customize your app experience and manage preferences
+        </p>
+      </div>
 
       {/* Theme Selection */}
-      <div className="p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
-        <h2 className="font-medium text-slate-900 dark:text-white mb-4">Appearance</h2>
-        <div className="grid grid-cols-3 gap-2">
+      <div className="p-4 bg-white dark:bg-[#505353] rounded-xl border border-[#CBCDCD] dark:border-[#5A5E5D]">
+        <h2 id="theme-heading" className="font-medium text-[#3C3E3E] dark:text-white mb-4">Appearance</h2>
+        <div className="grid grid-cols-3 gap-2" role="radiogroup" aria-labelledby="theme-heading">
           {themeOptions.map(({ value, label, icon: Icon }) => (
             <button
               key={value}
               onClick={() => setTheme(value)}
-              className={`flex flex-col items-center gap-2 p-3 rounded-xl border-2 transition-all ${
+              role="radio"
+              aria-checked={theme === value}
+              className={`flex flex-col items-center gap-2 p-3 rounded-xl border-2 transition-all focus-visible:ring-2 focus-visible:ring-[#24554F] focus-visible:ring-offset-2 ${
                 theme === value
-                  ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20'
-                  : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600'
+                  ? 'border-[#24554F] dark:border-[#40968C] bg-[#24554F] dark:bg-[#40968C]'
+                  : 'border-[#CBCDCD] dark:border-[#5A5E5D] hover:border-[#979B9A] dark:hover:border-[#696D6D]'
               }`}
             >
               <Icon className={`w-6 h-6 ${
                 theme === value
-                  ? 'text-indigo-600 dark:text-indigo-400'
-                  : 'text-slate-500 dark:text-slate-400'
+                  ? 'text-white'
+                  : 'text-[#505353] dark:text-[#B1B4B4]'
               }`} />
               <span className={`text-sm ${
                 theme === value
-                  ? 'text-indigo-600 dark:text-indigo-400 font-medium'
-                  : 'text-slate-600 dark:text-slate-400'
+                  ? 'text-white font-medium'
+                  : 'text-[#505353] dark:text-[#B1B4B4]'
               }`}>
                 {label}
               </span>
@@ -85,126 +92,129 @@ export function Settings() {
       </div>
 
       {/* Install App */}
-      <div className="p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
+      <div className="p-4 bg-white dark:bg-[#505353] rounded-xl border border-[#CBCDCD] dark:border-[#5A5E5D]">
         <div className="flex items-center gap-3 mb-4">
-          <DevicePhoneMobileIcon className="w-5 h-5 text-slate-600 dark:text-slate-400" />
-          <h2 className="font-medium text-slate-900 dark:text-white">Install App</h2>
+          <DevicePhoneMobileIcon className="w-5 h-5 text-[#505353] dark:text-[#B1B4B4]" />
+          <h2 className="font-medium text-[#3C3E3E] dark:text-white">Install App</h2>
         </div>
 
         {isInstalled ? (
-          <p className="text-sm text-emerald-600 dark:text-emerald-400">
+          <p className="text-sm text-[#24554F] dark:text-[#40968C]">
             This app is installed on your device.
           </p>
         ) : (
           <div className="space-y-3">
-            <p className="text-sm text-slate-600 dark:text-slate-400">
+            <p className="text-sm text-[#505353] dark:text-[#B1B4B4]">
               {isIOS
                 ? 'On iOS, tap the Share button in Safari and select "Add to Home Screen".'
-                : isInstallable
+                : isInstallable || canShowNativePrompt
                   ? 'Install this app for quick access and offline support.'
-                  : wasPromptDismissed
-                    ? 'You previously dismissed the install prompt. Click below to see it again.'
-                    : canShowNativePrompt
-                      ? 'Click below to install the app.'
-                      : 'Your browser will show an install option when the app is ready.'
+                  : 'Your browser may not support PWA installation, or shields/privacy settings may be blocking it. Try disabling Brave Shields or using Chrome.'
               }
             </p>
 
             <div className="flex flex-wrap gap-2">
-              {isInstallable && (
+              {(isInstallable || canShowNativePrompt) && (
                 <button
                   onClick={installPrompt}
-                  className="px-4 py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                  className="px-4 py-2 text-sm bg-[#24554F] dark:bg-[#40968C] text-white rounded-lg hover:bg-[#2E6B64] dark:hover:bg-[#378178] transition-colors"
                 >
                   Install App
                 </button>
               )}
 
-              {wasPromptDismissed && (
+              {wasPromptDismissed && canShowNativePrompt && (
                 <button
                   onClick={resetDismissed}
-                  className="px-4 py-2 text-sm bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
+                  className="px-4 py-2 text-sm bg-[#E5E6E6] dark:bg-[#5A5E5D] text-[#505353] dark:text-[#B1B4B4] rounded-lg hover:bg-[#CBCDCD] dark:hover:bg-[#696D6D] transition-colors"
                 >
                   Show Install Banner
                 </button>
               )}
             </div>
 
-            {!isIOS && (
-              <p className="text-xs text-slate-500 dark:text-slate-500 mt-2">
-                Tip: Dismiss resets on page refresh or new session.
+            {/* Install status info */}
+            <div className="mt-3 p-2 bg-[#CBCDCD]/50 dark:bg-[#3C3E3E] rounded-lg border border-[#B1B4B4] dark:border-[#505353]">
+              <p className="text-xs text-[#505353] dark:text-[#B1B4B4] font-mono">
+                Status: {canShowNativePrompt ? 'Install prompt available' : 'Waiting for browser install prompt'}
+                {wasPromptDismissed && ' (banner dismissed)'}
               </p>
-            )}
+            </div>
           </div>
         )}
       </div>
 
       {/* Install Prompt Style */}
       {!isInstalled && !isIOS && (
-        <div className="p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
-          <h2 className="font-medium text-slate-900 dark:text-white mb-2">Install Prompt Style</h2>
-          <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+        <div className="p-4 bg-white dark:bg-[#505353] rounded-xl border border-[#CBCDCD] dark:border-[#5A5E5D]">
+          <h2 className="font-medium text-[#3C3E3E] dark:text-white mb-2">Install Prompt Style</h2>
+          <p className="text-sm text-[#505353] dark:text-[#B1B4B4] mb-4">
             Choose how the install prompt appears. This setting takes effect on the next page load.
           </p>
 
           <div className="space-y-2">
-            <label className="flex items-start gap-3 p-3 rounded-xl border-2 cursor-pointer transition-all hover:border-slate-300 dark:hover:border-slate-600"
-              style={{
-                borderColor: useCustomBanner ? 'rgb(99 102 241)' : undefined,
-                backgroundColor: useCustomBanner ? 'rgb(238 242 255)' : undefined
-              }}
-            >
+            <label className={`flex items-start gap-3 p-3 rounded-xl border-2 cursor-pointer transition-all ${
+              useCustomBanner
+                ? 'border-[#24554F] bg-[#24554F]/10 dark:bg-[#40968C]/20'
+                : 'border-[#CBCDCD] dark:border-[#5A5E5D] hover:border-[#979B9A] dark:hover:border-[#696D6D]'
+            }`}>
               <input
                 type="radio"
                 name="promptStyle"
                 checked={useCustomBanner}
                 onChange={() => setUseCustomBanner(true)}
-                className="mt-1"
+                className="mt-1 accent-[#24554F]"
               />
               <div>
-                <span className="font-medium text-slate-900 dark:text-white">Custom Banner</span>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                  Shows our custom install banner at the bottom of the screen with dismiss option.
+                <span className="font-medium text-[#3C3E3E] dark:text-white">Custom Banner</span>
+                <p className="text-xs text-[#505353] dark:text-[#B1B4B4] mt-0.5">
+                  Shows our custom install banner at the top of the screen with dismiss option.
                 </p>
               </div>
             </label>
 
-            <label className="flex items-start gap-3 p-3 rounded-xl border-2 cursor-pointer transition-all hover:border-slate-300 dark:hover:border-slate-600"
-              style={{
-                borderColor: !useCustomBanner ? 'rgb(99 102 241)' : undefined,
-                backgroundColor: !useCustomBanner ? 'rgb(238 242 255)' : undefined
-              }}
-            >
+            <label className={`flex items-start gap-3 p-3 rounded-xl border-2 cursor-pointer transition-all ${
+              !useCustomBanner
+                ? 'border-[#24554F] bg-[#24554F]/10 dark:bg-[#40968C]/20'
+                : 'border-[#CBCDCD] dark:border-[#5A5E5D] hover:border-[#979B9A] dark:hover:border-[#696D6D]'
+            }`}>
               <input
                 type="radio"
                 name="promptStyle"
                 checked={!useCustomBanner}
                 onChange={() => setUseCustomBanner(false)}
-                className="mt-1"
+                className="mt-1 accent-[#24554F]"
               />
               <div>
-                <span className="font-medium text-slate-900 dark:text-white">Browser Native UI</span>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                <span className="font-medium text-[#3C3E3E] dark:text-white">Browser Native UI</span>
+                <p className="text-xs text-[#505353] dark:text-[#B1B4B4] mt-0.5">
                   Let the browser show its own install UI (mini-infobar on Android, address bar icon on desktop).
                 </p>
               </div>
             </label>
           </div>
 
-          <p className="text-xs text-amber-600 dark:text-amber-400 mt-3">
-            Note: After changing this setting, refresh the page to see the browser's native UI.
-            The browser may not show its UI immediately - it depends on engagement heuristics.
-          </p>
+          <div className="mt-3 p-3 bg-[#FFAB40]/10 dark:bg-[#FFAB40]/20 rounded-lg border border-[#FFAB40]/30 dark:border-[#FFAB40]/40">
+            <p className="text-xs text-[#7D8281] dark:text-[#B1B4B4]">
+              <strong className="text-[#505353] dark:text-white">Browser Native UI notes:</strong>
+            </p>
+            <ul className="text-xs text-[#505353] dark:text-[#B1B4B4] mt-1 ml-4 list-disc space-y-1">
+              <li>Requires page refresh after changing this setting</li>
+              <li>Chrome/Edge: Look for install icon in address bar</li>
+              <li>Brave: May require disabling Shields for this site</li>
+              <li>Browser decides when to show UI based on engagement</li>
+            </ul>
+          </div>
         </div>
       )}
 
       {/* Notification Settings */}
-      <div className="p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
+      <div className="p-4 bg-white dark:bg-[#505353] rounded-xl border border-[#CBCDCD] dark:border-[#5A5E5D]">
         <div className="flex items-center gap-3 mb-4">
-          <BellIcon className="w-5 h-5 text-slate-600 dark:text-slate-400" />
-          <h2 className="font-medium text-slate-900 dark:text-white">Notifications</h2>
+          <BellIcon className="w-5 h-5 text-[#505353] dark:text-[#B1B4B4]" />
+          <h2 className="font-medium text-[#3C3E3E] dark:text-white">Notifications</h2>
         </div>
-        <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+        <p className="text-sm text-[#505353] dark:text-[#B1B4B4] mb-4">
           {'Notification' in window
             ? `Current permission: ${Notification.permission}`
             : 'Notifications are not supported in this browser'
@@ -213,7 +223,7 @@ export function Settings() {
         {'Notification' in window && Notification.permission === 'default' && (
           <button
             onClick={() => Notification.requestPermission()}
-            className="px-4 py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+            className="px-4 py-2 text-sm bg-[#24554F] dark:bg-[#40968C] text-white rounded-lg hover:bg-[#2E6B64] dark:hover:bg-[#378178] transition-colors"
           >
             Enable Notifications
           </button>
@@ -221,26 +231,30 @@ export function Settings() {
       </div>
 
       {/* App Info */}
-      <div className="p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
+      <div className="p-4 bg-white dark:bg-[#505353] rounded-xl border border-[#CBCDCD] dark:border-[#5A5E5D]">
         <div className="flex items-center gap-3 mb-4">
-          <InformationCircleIcon className="w-5 h-5 text-slate-600 dark:text-slate-400" />
-          <h2 className="font-medium text-slate-900 dark:text-white">About This Demo</h2>
+          <InformationCircleIcon className="w-5 h-5 text-[#505353] dark:text-[#B1B4B4]" />
+          <h2 className="font-medium text-[#3C3E3E] dark:text-white">About This Demo</h2>
         </div>
 
         <div className="space-y-3 text-sm">
           <div className="flex justify-between">
-            <span className="text-slate-600 dark:text-slate-400">Version</span>
-            <span className="text-slate-900 dark:text-white">1.0.0</span>
+            <span className="text-[#505353] dark:text-[#B1B4B4]">Version</span>
+            <span className="text-[#3C3E3E] dark:text-white">1.0.0</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-slate-600 dark:text-slate-400">Install Status</span>
-            <span className={isInstalled ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-900 dark:text-white'}>
+            <span className="text-[#505353] dark:text-[#B1B4B4]">Install Status</span>
+            <span className={isInstalled ? 'text-[#24554F] dark:text-[#40968C]' : 'text-[#3C3E3E] dark:text-white'}>
               {isInstalled ? 'Installed' : 'Not Installed'}
             </span>
           </div>
           <div className="flex justify-between">
-            <span className="text-slate-600 dark:text-slate-400">Built With</span>
-            <span className="text-slate-900 dark:text-white">React + Vite + PWA Plugin</span>
+            <span className="text-[#505353] dark:text-[#B1B4B4]">Built By</span>
+            <span className="text-[#3C3E3E] dark:text-white">NorthBuilt</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-[#505353] dark:text-[#B1B4B4]">Built With</span>
+            <span className="text-[#3C3E3E] dark:text-white">React + Vite + PWA Plugin</span>
           </div>
         </div>
       </div>
@@ -248,31 +262,31 @@ export function Settings() {
       {/* Links */}
       <div className="space-y-2">
         <a
-          href="https://github.com/craftcodery/pwa-demo"
+          href="https://northbuilt.com"
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center justify-between p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-indigo-300 dark:hover:border-indigo-700 transition-colors"
+          className="flex items-center justify-between p-4 bg-white dark:bg-[#505353] rounded-xl border border-[#CBCDCD] dark:border-[#5A5E5D] hover:border-[#24554F] dark:hover:border-[#40968C] transition-colors"
         >
-          <span className="text-slate-900 dark:text-white">View Source Code</span>
-          <ArrowTopRightOnSquareIcon className="w-5 h-5 text-slate-400" />
+          <span className="text-[#3C3E3E] dark:text-white">NorthBuilt Website</span>
+          <ArrowTopRightOnSquareIcon className="w-5 h-5 text-[#979B9A]" />
         </a>
         <a
           href="https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps"
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center justify-between p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-indigo-300 dark:hover:border-indigo-700 transition-colors"
+          className="flex items-center justify-between p-4 bg-white dark:bg-[#505353] rounded-xl border border-[#CBCDCD] dark:border-[#5A5E5D] hover:border-[#24554F] dark:hover:border-[#40968C] transition-colors"
         >
-          <span className="text-slate-900 dark:text-white">MDN PWA Documentation</span>
-          <ArrowTopRightOnSquareIcon className="w-5 h-5 text-slate-400" />
+          <span className="text-[#3C3E3E] dark:text-white">MDN PWA Documentation</span>
+          <ArrowTopRightOnSquareIcon className="w-5 h-5 text-[#979B9A]" />
         </a>
         <a
           href="https://web.dev/explore/progressive-web-apps"
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center justify-between p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-indigo-300 dark:hover:border-indigo-700 transition-colors"
+          className="flex items-center justify-between p-4 bg-white dark:bg-[#505353] rounded-xl border border-[#CBCDCD] dark:border-[#5A5E5D] hover:border-[#24554F] dark:hover:border-[#40968C] transition-colors"
         >
-          <span className="text-slate-900 dark:text-white">web.dev PWA Guide</span>
-          <ArrowTopRightOnSquareIcon className="w-5 h-5 text-slate-400" />
+          <span className="text-[#3C3E3E] dark:text-white">web.dev PWA Guide</span>
+          <ArrowTopRightOnSquareIcon className="w-5 h-5 text-[#979B9A]" />
         </a>
       </div>
     </div>

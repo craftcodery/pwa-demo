@@ -21,20 +21,20 @@ function Accordion({ title, children, defaultOpen = false }: AccordionProps) {
   const [isOpen, setIsOpen] = useState(defaultOpen)
 
   return (
-    <div className="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden">
+    <div className="border border-[#CBCDCD] dark:border-[#5A5E5D] rounded-xl overflow-hidden bg-white dark:bg-[#505353]">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between p-4 bg-white dark:bg-slate-800 text-left hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
+        className="w-full flex items-center justify-between p-4 bg-white dark:bg-[#505353] text-left hover:bg-[#CBCDCD]/50 dark:hover:bg-[#5A5E5D]/50 transition-colors focus-visible:ring-2 focus-visible:ring-[#24554F] focus-visible:ring-inset"
       >
-        <span className="font-medium text-slate-900 dark:text-white">{title}</span>
+        <span className="font-medium text-[#3C3E3E] dark:text-white">{title}</span>
         {isOpen ? (
-          <ChevronUpIcon className="w-5 h-5 text-slate-400" />
+          <ChevronUpIcon className="w-5 h-5 text-[#696D6D] dark:text-[#B1B4B4]" />
         ) : (
-          <ChevronDownIcon className="w-5 h-5 text-slate-400" />
+          <ChevronDownIcon className="w-5 h-5 text-[#696D6D] dark:text-[#B1B4B4]" />
         )}
       </button>
       {isOpen && (
-        <div className="p-4 bg-slate-50 dark:bg-slate-900/50 border-t border-slate-200 dark:border-slate-700">
+        <div className="p-4 bg-[#CBCDCD]/30 dark:bg-[#3C3E3E] border-t border-[#CBCDCD] dark:border-[#5A5E5D]">
           {children}
         </div>
       )}
@@ -49,7 +49,7 @@ interface HowToProps {
 
 export function HowTo({ initialSection, onSectionChange }: HowToProps) {
   const [activeSection, setActiveSection] = useState<Section>(initialSection || 'install')
-  const { isInstalled, installPrompt, isInstallable, resetDismissed } = useInstallPrompt()
+  const { isInstalled } = useInstallPrompt()
 
   // Sync with URL when initialSection changes (browser back/forward)
   useEffect(() => {
@@ -74,24 +74,24 @@ export function HowTo({ initialSection, onSectionChange }: HowToProps) {
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
+        <h1 className="text-2xl font-bold text-[#3C3E3E] dark:text-white">
           How-To Guide
         </h1>
-        <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+        <p className="mt-2 text-sm text-[#696D6D] dark:text-[#B1B4B4]">
           Instructions for installing, managing, and testing PWA features
         </p>
       </div>
 
       {/* Section Tabs */}
-      <div className="flex gap-1 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl overflow-x-auto">
+      <div className="flex gap-1.5 p-1.5 bg-[#CBCDCD] dark:bg-[#3C3E3E] rounded-xl border border-[#B1B4B4] dark:border-[#505353] overflow-x-auto">
         {sections.map(section => (
           <button
             key={section.id}
             onClick={() => handleSectionChange(section.id)}
-            className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-3 text-sm font-medium rounded-lg transition-colors whitespace-nowrap ${
+            className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 px-3 text-sm font-medium rounded-lg transition-all whitespace-nowrap focus-visible:ring-2 focus-visible:ring-[#24554F] focus-visible:ring-offset-1 ${
               activeSection === section.id
-                ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                ? 'bg-white dark:bg-[#505353] text-[#24554F] dark:text-white shadow-md border border-[#979B9A] dark:border-[#696D6D]'
+                : 'text-[#505353] dark:text-[#B1B4B4] hover:text-[#24554F] dark:hover:text-white hover:bg-white/50 dark:hover:bg-[#505353]/50'
             }`}
           >
             <section.icon className="w-4 h-4" />
@@ -103,35 +103,6 @@ export function HowTo({ initialSection, onSectionChange }: HowToProps) {
       {/* Install Section */}
       {activeSection === 'install' && (
         <div className="space-y-4">
-          {/* Quick Install Button */}
-          {!isInstalled && (
-            <div className="p-4 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl border border-indigo-200 dark:border-indigo-800">
-              <h3 className="font-semibold text-indigo-900 dark:text-indigo-100 mb-2">
-                Quick Install
-              </h3>
-              <p className="text-sm text-indigo-700 dark:text-indigo-300 mb-3">
-                {isInstallable
-                  ? 'Your browser supports direct installation. Click the button below:'
-                  : 'Use the instructions below to install on your device.'
-                }
-              </p>
-              {isInstallable && (
-                <button
-                  onClick={installPrompt}
-                  className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm font-medium"
-                >
-                  Install PWA Demo
-                </button>
-              )}
-              <button
-                onClick={resetDismissed}
-                className="ml-2 px-4 py-2 bg-indigo-100 dark:bg-indigo-800 text-indigo-700 dark:text-indigo-200 rounded-lg hover:bg-indigo-200 dark:hover:bg-indigo-700 transition-colors text-sm"
-              >
-                Show Install Banner
-              </button>
-            </div>
-          )}
-
           {isInstalled && (
             <div className="p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl border border-emerald-200 dark:border-emerald-800">
               <p className="text-sm text-emerald-700 dark:text-emerald-300">
@@ -141,45 +112,45 @@ export function HowTo({ initialSection, onSectionChange }: HowToProps) {
           )}
 
           <Accordion title="Chrome (Android)" defaultOpen>
-            <ol className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
+            <ol className="space-y-2 text-sm text-[#696D6D] dark:text-[#B1B4B4]">
               <li className="flex gap-2">
-                <span className="font-semibold text-slate-900 dark:text-white">1.</span>
+                <span className="font-semibold text-[#3C3E3E] dark:text-white">1.</span>
                 Open this site in Chrome
               </li>
               <li className="flex gap-2">
-                <span className="font-semibold text-slate-900 dark:text-white">2.</span>
+                <span className="font-semibold text-[#3C3E3E] dark:text-white">2.</span>
                 Tap the <strong>three-dot menu</strong> (⋮) in the top right
               </li>
               <li className="flex gap-2">
-                <span className="font-semibold text-slate-900 dark:text-white">3.</span>
+                <span className="font-semibold text-[#3C3E3E] dark:text-white">3.</span>
                 Tap <strong>"Install app"</strong> or <strong>"Add to Home screen"</strong>
               </li>
               <li className="flex gap-2">
-                <span className="font-semibold text-slate-900 dark:text-white">4.</span>
+                <span className="font-semibold text-[#3C3E3E] dark:text-white">4.</span>
                 Confirm by tapping <strong>"Install"</strong>
               </li>
             </ol>
-            <p className="mt-3 text-xs text-slate-500 dark:text-slate-500">
+            <p className="mt-3 text-xs text-[#7D8281] dark:text-[#7D8281]">
               Chrome may also show a mini-infobar at the bottom of the screen prompting installation.
             </p>
           </Accordion>
 
           <Accordion title="Safari (iOS)">
-            <ol className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
+            <ol className="space-y-2 text-sm text-[#696D6D] dark:text-[#B1B4B4]">
               <li className="flex gap-2">
-                <span className="font-semibold text-slate-900 dark:text-white">1.</span>
+                <span className="font-semibold text-[#3C3E3E] dark:text-white">1.</span>
                 Open this site in Safari (required - other browsers won't work)
               </li>
               <li className="flex gap-2">
-                <span className="font-semibold text-slate-900 dark:text-white">2.</span>
+                <span className="font-semibold text-[#3C3E3E] dark:text-white">2.</span>
                 Tap the <strong>Share button</strong> (square with arrow) at the bottom
               </li>
               <li className="flex gap-2">
-                <span className="font-semibold text-slate-900 dark:text-white">3.</span>
+                <span className="font-semibold text-[#3C3E3E] dark:text-white">3.</span>
                 Scroll down and tap <strong>"Add to Home Screen"</strong>
               </li>
               <li className="flex gap-2">
-                <span className="font-semibold text-slate-900 dark:text-white">4.</span>
+                <span className="font-semibold text-[#3C3E3E] dark:text-white">4.</span>
                 Tap <strong>"Add"</strong> in the top right
               </li>
             </ol>
@@ -191,33 +162,33 @@ export function HowTo({ initialSection, onSectionChange }: HowToProps) {
           </Accordion>
 
           <Accordion title="Chrome / Edge (Desktop)">
-            <ol className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
+            <ol className="space-y-2 text-sm text-[#696D6D] dark:text-[#B1B4B4]">
               <li className="flex gap-2">
-                <span className="font-semibold text-slate-900 dark:text-white">1.</span>
+                <span className="font-semibold text-[#3C3E3E] dark:text-white">1.</span>
                 Look for the <strong>install icon</strong> (⊕) in the address bar
               </li>
               <li className="flex gap-2">
-                <span className="font-semibold text-slate-900 dark:text-white">2.</span>
+                <span className="font-semibold text-[#3C3E3E] dark:text-white">2.</span>
                 Click it and confirm <strong>"Install"</strong>
               </li>
             </ol>
-            <p className="mt-3 text-xs text-slate-500 dark:text-slate-500">
+            <p className="mt-3 text-xs text-[#7D8281] dark:text-[#7D8281]">
               Alternatively: Menu (⋮) → "Install PWA Demo" or "Save and Share" → "Install"
             </p>
           </Accordion>
 
           <Accordion title="Safari (macOS Sonoma+)">
-            <ol className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
+            <ol className="space-y-2 text-sm text-[#696D6D] dark:text-[#B1B4B4]">
               <li className="flex gap-2">
-                <span className="font-semibold text-slate-900 dark:text-white">1.</span>
+                <span className="font-semibold text-[#3C3E3E] dark:text-white">1.</span>
                 Open this site in Safari 17+
               </li>
               <li className="flex gap-2">
-                <span className="font-semibold text-slate-900 dark:text-white">2.</span>
+                <span className="font-semibold text-[#3C3E3E] dark:text-white">2.</span>
                 Click <strong>File</strong> in the menu bar
               </li>
               <li className="flex gap-2">
-                <span className="font-semibold text-slate-900 dark:text-white">3.</span>
+                <span className="font-semibold text-[#3C3E3E] dark:text-white">3.</span>
                 Click <strong>"Add to Dock"</strong>
               </li>
             </ol>
@@ -229,74 +200,74 @@ export function HowTo({ initialSection, onSectionChange }: HowToProps) {
       {activeSection === 'uninstall' && (
         <div className="space-y-4">
           <Accordion title="Android" defaultOpen>
-            <ol className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
+            <ol className="space-y-2 text-sm text-[#696D6D] dark:text-[#B1B4B4]">
               <li className="flex gap-2">
-                <span className="font-semibold text-slate-900 dark:text-white">1.</span>
+                <span className="font-semibold text-[#3C3E3E] dark:text-white">1.</span>
                 Long-press the app icon on your home screen
               </li>
               <li className="flex gap-2">
-                <span className="font-semibold text-slate-900 dark:text-white">2.</span>
+                <span className="font-semibold text-[#3C3E3E] dark:text-white">2.</span>
                 Drag to <strong>"Uninstall"</strong> or tap the (i) icon
               </li>
               <li className="flex gap-2">
-                <span className="font-semibold text-slate-900 dark:text-white">3.</span>
+                <span className="font-semibold text-[#3C3E3E] dark:text-white">3.</span>
                 Confirm removal
               </li>
             </ol>
-            <p className="mt-3 text-xs text-slate-500 dark:text-slate-500">
+            <p className="mt-3 text-xs text-[#7D8281] dark:text-[#7D8281]">
               Or: Settings → Apps → PWA Demo → Uninstall
             </p>
           </Accordion>
 
           <Accordion title="iOS">
-            <ol className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
+            <ol className="space-y-2 text-sm text-[#696D6D] dark:text-[#B1B4B4]">
               <li className="flex gap-2">
-                <span className="font-semibold text-slate-900 dark:text-white">1.</span>
+                <span className="font-semibold text-[#3C3E3E] dark:text-white">1.</span>
                 Long-press the app icon on your home screen
               </li>
               <li className="flex gap-2">
-                <span className="font-semibold text-slate-900 dark:text-white">2.</span>
+                <span className="font-semibold text-[#3C3E3E] dark:text-white">2.</span>
                 Tap <strong>"Remove App"</strong> or the minus (−) icon
               </li>
               <li className="flex gap-2">
-                <span className="font-semibold text-slate-900 dark:text-white">3.</span>
+                <span className="font-semibold text-[#3C3E3E] dark:text-white">3.</span>
                 Tap <strong>"Delete App"</strong> to confirm
               </li>
             </ol>
           </Accordion>
 
           <Accordion title="Desktop (Chrome/Edge)">
-            <ol className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
+            <ol className="space-y-2 text-sm text-[#696D6D] dark:text-[#B1B4B4]">
               <li className="flex gap-2">
-                <span className="font-semibold text-slate-900 dark:text-white">1.</span>
+                <span className="font-semibold text-[#3C3E3E] dark:text-white">1.</span>
                 Open the installed PWA
               </li>
               <li className="flex gap-2">
-                <span className="font-semibold text-slate-900 dark:text-white">2.</span>
+                <span className="font-semibold text-[#3C3E3E] dark:text-white">2.</span>
                 Click the <strong>three-dot menu</strong> in the title bar
               </li>
               <li className="flex gap-2">
-                <span className="font-semibold text-slate-900 dark:text-white">3.</span>
+                <span className="font-semibold text-[#3C3E3E] dark:text-white">3.</span>
                 Click <strong>"Uninstall PWA Demo"</strong>
               </li>
             </ol>
-            <p className="mt-3 text-xs text-slate-500 dark:text-slate-500">
+            <p className="mt-3 text-xs text-[#7D8281] dark:text-[#7D8281]">
               Or in Chrome: chrome://apps → Right-click app → Remove from Chrome
             </p>
           </Accordion>
 
           <Accordion title="macOS (Safari)">
-            <ol className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
+            <ol className="space-y-2 text-sm text-[#696D6D] dark:text-[#B1B4B4]">
               <li className="flex gap-2">
-                <span className="font-semibold text-slate-900 dark:text-white">1.</span>
+                <span className="font-semibold text-[#3C3E3E] dark:text-white">1.</span>
                 Right-click the app in the Dock
               </li>
               <li className="flex gap-2">
-                <span className="font-semibold text-slate-900 dark:text-white">2.</span>
+                <span className="font-semibold text-[#3C3E3E] dark:text-white">2.</span>
                 Click <strong>Options</strong> → <strong>"Remove from Dock"</strong>
               </li>
               <li className="flex gap-2">
-                <span className="font-semibold text-slate-900 dark:text-white">3.</span>
+                <span className="font-semibold text-[#3C3E3E] dark:text-white">3.</span>
                 Delete from Applications folder if present
               </li>
             </ol>
@@ -307,18 +278,18 @@ export function HowTo({ initialSection, onSectionChange }: HowToProps) {
       {/* Permissions Section */}
       {activeSection === 'permissions' && (
         <div className="space-y-4">
-          <div className="p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
-            <h3 className="font-semibold text-slate-900 dark:text-white mb-2">
+          <div className="p-4 bg-white dark:bg-[#505353] rounded-xl border border-[#CBCDCD] dark:border-[#5A5E5D]">
+            <h3 className="font-semibold text-[#3C3E3E] dark:text-white mb-2">
               About Permissions
             </h3>
-            <p className="text-sm text-slate-600 dark:text-slate-400">
+            <p className="text-sm text-[#696D6D] dark:text-[#B1B4B4]">
               PWAs request permissions just like native apps. You control what access to grant.
               Permissions can be changed at any time in your browser or device settings.
             </p>
           </div>
 
           <Accordion title="Notifications" defaultOpen>
-            <div className="space-y-3 text-sm text-slate-600 dark:text-slate-400">
+            <div className="space-y-3 text-sm text-[#696D6D] dark:text-[#B1B4B4]">
               <p><strong>Enable:</strong> Click "Allow" when prompted, or use the Capabilities tab to request permission.</p>
               <p><strong>Disable (Chrome):</strong> Click the lock icon in address bar → Site settings → Notifications → Block</p>
               <p><strong>Disable (Safari iOS):</strong> Settings → Apps → PWA Demo → Notifications → Off</p>
@@ -327,7 +298,7 @@ export function HowTo({ initialSection, onSectionChange }: HowToProps) {
           </Accordion>
 
           <Accordion title="Location">
-            <div className="space-y-3 text-sm text-slate-600 dark:text-slate-400">
+            <div className="space-y-3 text-sm text-[#696D6D] dark:text-[#B1B4B4]">
               <p><strong>Enable:</strong> Click "Allow" when the site requests location access.</p>
               <p><strong>Disable (Chrome):</strong> Lock icon → Site settings → Location → Block</p>
               <p><strong>Disable (iOS):</strong> Settings → Privacy → Location Services → Safari/PWA → Never</p>
@@ -336,17 +307,17 @@ export function HowTo({ initialSection, onSectionChange }: HowToProps) {
           </Accordion>
 
           <Accordion title="Camera & Microphone">
-            <div className="space-y-3 text-sm text-slate-600 dark:text-slate-400">
+            <div className="space-y-3 text-sm text-[#696D6D] dark:text-[#B1B4B4]">
               <p><strong>Enable:</strong> Click "Allow" when prompted for camera/microphone access.</p>
               <p><strong>Disable:</strong> Same as location - use lock icon in address bar or device settings.</p>
-              <p className="text-xs text-slate-500 dark:text-slate-500">
+              <p className="text-xs text-[#7D8281] dark:text-[#7D8281]">
                 Note: Camera/microphone access requires HTTPS (which this demo uses).
               </p>
             </div>
           </Accordion>
 
           <Accordion title="Clear All Site Data">
-            <div className="space-y-3 text-sm text-slate-600 dark:text-slate-400">
+            <div className="space-y-3 text-sm text-[#696D6D] dark:text-[#B1B4B4]">
               <p>To completely reset the PWA (clear cache, storage, and permissions):</p>
               <p><strong>Chrome:</strong> Lock icon → Site settings → Clear data</p>
               <p><strong>Safari:</strong> Settings → Safari → Advanced → Website Data → Edit → Remove site</p>
@@ -360,7 +331,7 @@ export function HowTo({ initialSection, onSectionChange }: HowToProps) {
       {activeSection === 'testing' && (
         <div className="space-y-4">
           <Accordion title="Test Offline Mode" defaultOpen>
-            <div className="space-y-3 text-sm text-slate-600 dark:text-slate-400">
+            <div className="space-y-3 text-sm text-[#696D6D] dark:text-[#B1B4B4]">
               <p><strong>Easy way:</strong> Turn on Airplane mode, then use the app.</p>
               <p><strong>DevTools way:</strong></p>
               <ol className="ml-4 space-y-1">
@@ -369,14 +340,14 @@ export function HowTo({ initialSection, onSectionChange }: HowToProps) {
                 <li>3. Check "Offline" checkbox</li>
                 <li>4. Refresh and use the app</li>
               </ol>
-              <p className="text-xs text-slate-500 dark:text-slate-500">
+              <p className="text-xs text-[#7D8281] dark:text-[#7D8281]">
                 The app should still load from the Service Worker cache.
               </p>
             </div>
           </Accordion>
 
           <Accordion title="Inspect Service Worker">
-            <div className="space-y-3 text-sm text-slate-600 dark:text-slate-400">
+            <div className="space-y-3 text-sm text-[#696D6D] dark:text-[#B1B4B4]">
               <p><strong>Chrome/Edge:</strong></p>
               <ol className="ml-4 space-y-1">
                 <li>1. Open DevTools → Application tab</li>
@@ -393,12 +364,11 @@ export function HowTo({ initialSection, onSectionChange }: HowToProps) {
           </Accordion>
 
           <Accordion title="Test Install Prompt">
-            <div className="space-y-3 text-sm text-slate-600 dark:text-slate-400">
+            <div className="space-y-3 text-sm text-[#696D6D] dark:text-[#B1B4B4]">
               <p>To see the install prompt again after dismissing:</p>
               <ol className="ml-4 space-y-1">
-                <li>1. Click "Show Install Banner" button above</li>
-                <li>2. Or refresh the page (dismiss only lasts this session)</li>
-                <li>3. Or clear site data and revisit</li>
+                <li>1. Refresh the page</li>
+                <li>2. Or clear site data and revisit</li>
               </ol>
               <p className="mt-2"><strong>DevTools way:</strong></p>
               <ol className="ml-4 space-y-1">
@@ -410,7 +380,7 @@ export function HowTo({ initialSection, onSectionChange }: HowToProps) {
           </Accordion>
 
           <Accordion title="Lighthouse PWA Audit">
-            <div className="space-y-3 text-sm text-slate-600 dark:text-slate-400">
+            <div className="space-y-3 text-sm text-[#696D6D] dark:text-[#B1B4B4]">
               <p>Run a PWA audit to check compliance:</p>
               <ol className="ml-4 space-y-1">
                 <li>1. Open DevTools → Lighthouse tab</li>
@@ -422,7 +392,7 @@ export function HowTo({ initialSection, onSectionChange }: HowToProps) {
           </Accordion>
 
           <Accordion title="Test Push Notifications">
-            <div className="space-y-3 text-sm text-slate-600 dark:text-slate-400">
+            <div className="space-y-3 text-sm text-[#696D6D] dark:text-[#B1B4B4]">
               <p>To test notifications:</p>
               <ol className="ml-4 space-y-1">
                 <li>1. Go to the Capabilities tab</li>
@@ -435,7 +405,7 @@ export function HowTo({ initialSection, onSectionChange }: HowToProps) {
           </Accordion>
 
           <Accordion title="Simulate Slow Network">
-            <div className="space-y-3 text-sm text-slate-600 dark:text-slate-400">
+            <div className="space-y-3 text-sm text-[#696D6D] dark:text-[#B1B4B4]">
               <p>Test how the app performs on slow connections:</p>
               <ol className="ml-4 space-y-1">
                 <li>1. DevTools → Network tab</li>

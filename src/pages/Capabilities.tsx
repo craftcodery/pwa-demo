@@ -45,6 +45,14 @@ export function Capabilities({ initialTab, onTabChange }: CapabilitiesProps) {
 
   const [results, setResults] = useState<Record<string, string>>({})
   const [activeCategory, setActiveCategory] = useState<Category>(initialTab || 'core')
+  // Track mount state to animate icon backgrounds from grey to their status color
+  const [hasMounted, setHasMounted] = useState(false)
+
+  useEffect(() => {
+    // Small delay to ensure the initial grey state is visible before transitioning
+    const timer = setTimeout(() => setHasMounted(true), 50)
+    return () => clearTimeout(timer)
+  }, [])
 
   // Sync with URL when initialTab changes (browser back/forward)
   useEffect(() => {
@@ -90,13 +98,44 @@ export function Capabilities({ initialTab, onTabChange }: CapabilitiesProps) {
       return
     }
 
+    // Helper to show notification via Service Worker (better compatibility)
+    const showNotification = async () => {
+      const options: NotificationOptions = {
+        body: 'Notifications are working! This notification was triggered from the PWA Demo.',
+        icon: `${import.meta.env.BASE_URL}icons/icon-192x192.png`,
+        badge: `${import.meta.env.BASE_URL}icons/icon-72x72.png`,
+        tag: 'pwa-demo-test',
+        requireInteraction: false
+      }
+
+      // Try Service Worker notification first (works better in Brave and other browsers)
+      if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+        try {
+          const registration = await navigator.serviceWorker.ready
+          await registration.showNotification('PWA Demo', options)
+          return true
+        } catch (e) {
+          console.log('SW notification failed, falling back to regular notification', e)
+        }
+      }
+
+      // Fallback to regular Notification API
+      try {
+        new Notification('PWA Demo', options)
+        return true
+      } catch (e) {
+        console.error('Notification error:', e)
+        return false
+      }
+    }
+
     if (currentState === 'granted') {
-      // Already have permission, just send notification
-      new Notification('PWA Demo', {
-        body: 'Notifications are working!',
-        icon: '/pwa-demo/icons/icon-192x192.png'
-      })
-      setResult('notifications', 'Permission already granted - notification sent!')
+      const sent = await showNotification()
+      if (sent) {
+        setResult('notifications', 'Notification sent! Check your system notifications (may appear in notification center on desktop).')
+      } else {
+        setResult('notifications', 'Failed to send notification. Check browser notification settings.')
+      }
       return
     }
 
@@ -106,11 +145,12 @@ export function Capabilities({ initialTab, onTabChange }: CapabilitiesProps) {
     try {
       const permission = await Notification.requestPermission()
       if (permission === 'granted') {
-        new Notification('PWA Demo', {
-          body: 'Notifications are working!',
-          icon: '/pwa-demo/icons/icon-192x192.png'
-        })
-        setResult('notifications', 'Permission granted - notification sent!')
+        const sent = await showNotification()
+        if (sent) {
+          setResult('notifications', 'Permission granted - notification sent! Check your system notifications.')
+        } else {
+          setResult('notifications', 'Permission granted but notification failed. Try again.')
+        }
       } else if (permission === 'denied') {
         setResult('notifications', 'Permission denied. To reset: click lock icon in URL bar → Site settings → Notifications → Allow')
       } else {
@@ -431,40 +471,27 @@ export function Capabilities({ initialTab, onTabChange }: CapabilitiesProps) {
 
   const currentCapabilities = categories.find(c => c.id === activeCategory)?.capabilities || []
 
-  const StatusIcon = ({ status }: { status: SupportStatus }) => {
-    switch (status) {
-      case 'supported':
-        return <CheckCircleIcon className="w-5 h-5 text-emerald-500" />
-      case 'unsupported':
-        return <XCircleIcon className="w-5 h-5 text-slate-300 dark:text-slate-600" />
-      case 'partial':
-        return <ExclamationTriangleIcon className="w-5 h-5 text-amber-500" />
-      default:
-        return <ExclamationTriangleIcon className="w-5 h-5 text-slate-400" />
-    }
-  }
-
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
+        <h1 className="text-2xl font-bold text-[#3C3E3E] dark:text-white">
           PWA Capabilities
         </h1>
-        <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+        <p className="mt-2 text-sm text-[#696D6D] dark:text-[#B1B4B4]">
           Test what your browser supports. Status reflects this device.
         </p>
       </div>
 
       {/* Category Tabs */}
-      <div className="flex gap-2 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl">
+      <div className="flex gap-2 p-1.5 bg-[#CBCDCD] dark:bg-[#3C3E3E] rounded-xl border border-[#B1B4B4] dark:border-[#505353]">
         {categories.map(cat => (
           <button
             key={cat.id}
             onClick={() => handleCategoryChange(cat.id)}
-            className={`flex-1 py-2 px-3 text-sm font-medium rounded-lg transition-colors ${
+            className={`flex-1 py-2.5 px-3 text-sm font-medium rounded-lg transition-all focus-visible:ring-2 focus-visible:ring-[#24554F] focus-visible:ring-offset-1 ${
               activeCategory === cat.id
-                ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                ? 'bg-white dark:bg-[#505353] text-[#24554F] dark:text-white shadow-md border border-[#979B9A] dark:border-[#696D6D]'
+                : 'text-[#505353] dark:text-[#B1B4B4] hover:text-[#24554F] dark:hover:text-white hover:bg-white/50 dark:hover:bg-[#505353]/50'
             }`}
           >
             {cat.label}
@@ -477,34 +504,35 @@ export function Capabilities({ initialTab, onTabChange }: CapabilitiesProps) {
         {currentCapabilities.map((cap) => (
           <div
             key={cap.id}
-            className="p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700"
+            className="p-4 bg-white dark:bg-[#505353] rounded-xl border border-[#CBCDCD] dark:border-[#5A5E5D]"
           >
             <div className="flex items-start gap-3">
-              <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                cap.status === 'supported'
-                  ? 'bg-emerald-100 dark:bg-emerald-900/30'
-                  : cap.status === 'partial'
-                    ? 'bg-amber-100 dark:bg-amber-900/30'
-                    : 'bg-slate-100 dark:bg-slate-700'
-              }`}>
-                <cap.icon className={`w-5 h-5 ${
-                  cap.status === 'supported'
-                    ? 'text-emerald-600 dark:text-emerald-400'
+              <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors duration-300 ${
+                !hasMounted
+                  ? 'bg-[#CBCDCD] dark:bg-[#5A5E5D]'
+                  : cap.status === 'supported'
+                    ? 'bg-emerald-100 dark:bg-emerald-900/30'
                     : cap.status === 'partial'
-                      ? 'text-amber-600 dark:text-amber-400'
-                      : 'text-slate-400'
+                      ? 'bg-amber-100 dark:bg-amber-900/30'
+                      : 'bg-[#CBCDCD] dark:bg-[#5A5E5D]'
+              }`}>
+                <cap.icon className={`w-5 h-5 transition-colors duration-300 ${
+                  !hasMounted
+                    ? 'text-[#696D6D] dark:text-[#B1B4B4]'
+                    : cap.status === 'supported'
+                      ? 'text-emerald-600 dark:text-emerald-400'
+                      : cap.status === 'partial'
+                        ? 'text-amber-600 dark:text-amber-400'
+                        : 'text-[#979B9A]'
                 }`} />
               </div>
 
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <h3 className="font-medium text-slate-900 dark:text-white">{cap.name}</h3>
-                  <StatusIcon status={cap.status} />
-                </div>
-                <p className="text-sm text-slate-600 dark:text-slate-400 mt-0.5">
+                <h3 className="font-medium text-[#3C3E3E] dark:text-white">{cap.name}</h3>
+                <p className="text-sm text-[#696D6D] dark:text-[#B1B4B4] mt-0.5">
                   {cap.description}
                 </p>
-                <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
+                <p className="text-xs text-[#979B9A] dark:text-[#7D8281] mt-1">
                   {cap.browserSupport}
                 </p>
 
@@ -514,13 +542,13 @@ export function Capabilities({ initialTab, onTabChange }: CapabilitiesProps) {
                       <button
                         onClick={cap.action}
                         disabled={cap.status === 'unsupported'}
-                        className="px-3 py-1.5 text-xs font-medium bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="px-3 py-1.5 text-xs font-medium bg-[#24554F] dark:bg-[#40968C] text-white rounded-lg hover:bg-[#2E6B64] dark:hover:bg-[#378178] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         {cap.actionLabel}
                       </button>
                     )}
                     {!cap.action && cap.actionLabel && (
-                      <span className="text-xs text-slate-500 dark:text-slate-400 italic">
+                      <span className="text-xs text-[#7D8281] dark:text-[#B1B4B4] italic">
                         {cap.actionLabel}
                       </span>
                     )}
@@ -528,8 +556,8 @@ export function Capabilities({ initialTab, onTabChange }: CapabilitiesProps) {
                 )}
 
                 {results[cap.id] && (
-                  <div className="mt-2 p-2 bg-slate-50 dark:bg-slate-900/50 rounded-lg">
-                    <p className="text-xs text-slate-600 dark:text-slate-400 font-mono">
+                  <div className="mt-2 p-2 bg-[#24554F]/10 dark:bg-[#3C3E3E] rounded-lg border border-[#24554F]/20 dark:border-[#505353]">
+                    <p className="text-xs text-[#505353] dark:text-[#B1B4B4] font-mono">
                       {results[cap.id]}
                     </p>
                   </div>
@@ -541,24 +569,24 @@ export function Capabilities({ initialTab, onTabChange }: CapabilitiesProps) {
       </div>
 
       {/* Legend */}
-      <div className="flex items-center justify-center gap-4 text-xs text-slate-500 dark:text-slate-400 pt-2">
+      <div className="flex items-center justify-center gap-4 text-xs text-[#505353] dark:text-[#B1B4B4] pt-2">
         <div className="flex items-center gap-1">
-          <CheckCircleIcon className="w-4 h-4 text-emerald-500" />
+          <CheckCircleIcon className="w-4 h-4 text-emerald-600" />
           <span>Supported</span>
         </div>
         <div className="flex items-center gap-1">
-          <ExclamationTriangleIcon className="w-4 h-4 text-amber-500" />
+          <ExclamationTriangleIcon className="w-4 h-4 text-amber-600" />
           <span>Partial</span>
         </div>
         <div className="flex items-center gap-1">
-          <XCircleIcon className="w-4 h-4 text-slate-300 dark:text-slate-600" />
+          <XCircleIcon className="w-4 h-4 text-[#979B9A] dark:text-[#696D6D]" />
           <span>Unsupported</span>
         </div>
       </div>
 
       {/* Note */}
-      <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl text-center">
-        <p className="text-xs text-slate-500 dark:text-slate-400">
+      <div className="p-4 bg-white dark:bg-[#505353]/50 rounded-xl border border-[#CBCDCD] dark:border-[#5A5E5D] text-center">
+        <p className="text-xs text-[#505353] dark:text-[#B1B4B4]">
           Some features require HTTPS, user permission, or may only work when the app is installed.
           <br />
           Results vary by browser and operating system.

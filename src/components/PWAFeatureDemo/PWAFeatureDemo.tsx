@@ -92,26 +92,26 @@ export function PWAFeatureDemo() {
     supported: boolean
     status?: string
   }) => (
-    <div className="flex items-center justify-between p-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
+    <div className="flex items-center justify-between p-3 bg-white dark:bg-[#505353] rounded-xl border border-[#CBCDCD] dark:border-[#5A5E5D]">
       <div className="flex items-center gap-3">
         <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
           supported
             ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400'
-            : 'bg-slate-100 dark:bg-slate-700 text-slate-400'
+            : 'bg-[#E5E6E6] dark:bg-[#5A5E5D] text-[#979B9A]'
         }`}>
           <Icon className="w-4 h-4" />
         </div>
         <div>
-          <p className="text-sm font-medium text-slate-900 dark:text-white">{label}</p>
+          <p className="text-sm font-medium text-[#3C3E3E] dark:text-white">{label}</p>
           {status && (
-            <p className="text-xs text-slate-500 dark:text-slate-400">{status}</p>
+            <p className="text-xs text-[#7D8281] dark:text-[#B1B4B4]">{status}</p>
           )}
         </div>
       </div>
       {supported ? (
         <CheckCircleIcon className="w-5 h-5 text-emerald-500" />
       ) : (
-        <XCircleIcon className="w-5 h-5 text-slate-300 dark:text-slate-600" />
+        <XCircleIcon className="w-5 h-5 text-[#B1B4B4] dark:text-[#696D6D]" />
       )}
     </div>
   )
@@ -119,7 +119,7 @@ export function PWAFeatureDemo() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">
+        <h2 className="text-lg font-semibold text-[#3C3E3E] dark:text-white mb-4">
           PWA Features Status
         </h2>
 
@@ -162,55 +162,55 @@ export function PWAFeatureDemo() {
       </div>
 
       <div>
-        <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">
+        <h2 className="text-lg font-semibold text-[#3C3E3E] dark:text-white mb-4">
           Try PWA Features
         </h2>
 
         <div className="space-y-4">
           {/* Notifications */}
-          <div className="p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
-            <h3 className="text-sm font-medium text-slate-900 dark:text-white mb-3">
+          <div className="p-4 bg-white dark:bg-[#505353] rounded-xl border border-[#CBCDCD] dark:border-[#5A5E5D]">
+            <h3 className="text-sm font-medium text-[#3C3E3E] dark:text-white mb-3">
               Notifications
             </h3>
             <div className="flex flex-wrap gap-2">
               <button
                 onClick={requestNotificationPermission}
-                className="px-3 py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                className="px-3 py-2 text-sm bg-[#24554F] dark:bg-[#40968C] text-white rounded-lg hover:bg-[#2E6B64] dark:hover:bg-[#378178] transition-colors"
               >
                 Request Permission
               </button>
               <button
                 onClick={showTestNotification}
                 disabled={pwaStatus.notificationPermission !== 'granted'}
-                className="px-3 py-2 text-sm bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-3 py-2 text-sm bg-[#E5E6E6] dark:bg-[#5A5E5D] text-[#5A5E5D] dark:text-[#B1B4B4] rounded-lg hover:bg-[#CBCDCD] dark:hover:bg-[#696D6D] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Show Test Notification
               </button>
             </div>
             {notificationStatus && (
-              <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">{notificationStatus}</p>
+              <p className="mt-2 text-xs text-[#7D8281] dark:text-[#B1B4B4]">{notificationStatus}</p>
             )}
           </div>
 
           {/* Badging */}
           {pwaStatus.hasBadgingAPI && (
-            <div className="p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
-              <h3 className="text-sm font-medium text-slate-900 dark:text-white mb-3">
+            <div className="p-4 bg-white dark:bg-[#505353] rounded-xl border border-[#CBCDCD] dark:border-[#5A5E5D]">
+              <h3 className="text-sm font-medium text-[#3C3E3E] dark:text-white mb-3">
                 App Badge (visible on installed app icon)
               </h3>
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => updateBadge(Math.max(0, badgeCount - 1))}
-                  className="w-10 h-10 flex items-center justify-center text-lg bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600"
+                  className="w-10 h-10 flex items-center justify-center text-lg bg-[#E5E6E6] dark:bg-[#5A5E5D] text-[#5A5E5D] dark:text-[#B1B4B4] rounded-lg hover:bg-[#CBCDCD] dark:hover:bg-[#696D6D]"
                 >
                   -
                 </button>
-                <span className="w-12 text-center text-lg font-semibold text-slate-900 dark:text-white">
+                <span className="w-12 text-center text-lg font-semibold text-[#3C3E3E] dark:text-white">
                   {badgeCount}
                 </span>
                 <button
                   onClick={() => updateBadge(badgeCount + 1)}
-                  className="w-10 h-10 flex items-center justify-center text-lg bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600"
+                  className="w-10 h-10 flex items-center justify-center text-lg bg-[#E5E6E6] dark:bg-[#5A5E5D] text-[#5A5E5D] dark:text-[#B1B4B4] rounded-lg hover:bg-[#CBCDCD] dark:hover:bg-[#696D6D]"
                 >
                   +
                 </button>
@@ -226,13 +226,13 @@ export function PWAFeatureDemo() {
 
           {/* Share */}
           {pwaStatus.canShare && (
-            <div className="p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
-              <h3 className="text-sm font-medium text-slate-900 dark:text-white mb-3">
+            <div className="p-4 bg-white dark:bg-[#505353] rounded-xl border border-[#CBCDCD] dark:border-[#5A5E5D]">
+              <h3 className="text-sm font-medium text-[#3C3E3E] dark:text-white mb-3">
                 Web Share API
               </h3>
               <button
                 onClick={shareContent}
-                className="px-4 py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors flex items-center gap-2"
+                className="px-4 py-2 text-sm bg-[#24554F] dark:bg-[#40968C] text-white rounded-lg hover:bg-[#2E6B64] dark:hover:bg-[#378178] transition-colors flex items-center gap-2"
               >
                 <ShareIcon className="w-4 h-4" />
                 Share This Demo
