@@ -232,8 +232,8 @@ const router = createBrowserRouter(
         { path: 'howto', element: <HowToPage /> },
         { path: 'howto/:section', element: <HowToPage /> },
         { path: 'settings', element: <Settings /> },
-        // Catch-all redirect to home
-        { path: '*', element: <Overview /> }
+        // Catch-all shows 404 error
+        { path: '*', loader: () => { throw new Response('Not Found', { status: 404 }) } }
       ]
     }
   ],
