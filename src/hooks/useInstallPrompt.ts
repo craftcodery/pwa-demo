@@ -18,34 +18,32 @@ interface UseInstallPromptReturn {
   setUseCustomBanner: (value: boolean) => void
 }
 
+// Check if app is installed - can be called synchronously
+function checkIsInstalled(): boolean {
+  if (typeof window === 'undefined') return false
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches
+  const isIOSStandalone = (navigator as unknown as { standalone?: boolean }).standalone === true
+  return isStandalone || isIOSStandalone
+}
+
 export function useInstallPrompt(): UseInstallPromptReturn {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null)
-  const [isInstalled, setIsInstalled] = useState(false)
+  // Initialize isInstalled synchronously to prevent flicker
+  const [isInstalled, setIsInstalled] = useState(checkIsInstalled)
   const [useCustomBanner, setUseCustomBannerState] = useState(() => {
     const stored = localStorage.getItem('pwa-use-custom-banner')
     // Default to true (custom banner) if not set
     return stored !== 'false'
   })
-  // Use sessionStorage so dismiss only lasts for current session (good for demo)
-  const [wasPromptDismissed, setWasPromptDismissed] = useState(() => {
-    return sessionStorage.getItem('pwa-install-dismissed') === 'true'
-  })
+  // Dismiss state resets on every page refresh (good for demo)
+  const [wasPromptDismissed, setWasPromptDismissed] = useState(false)
 
-  // Check if running in standalone mode (already installed)
+  // Listen for display mode changes (e.g., if user installs while app is open)
   useEffect(() => {
-    const checkInstalled = () => {
-      const isStandalone = window.matchMedia('(display-mode: standalone)').matches
-      const isIOSStandalone = (navigator as unknown as { standalone?: boolean }).standalone === true
-      setIsInstalled(isStandalone || isIOSStandalone)
-    }
-
-    checkInstalled()
-
-    // Listen for display mode changes
     const mediaQuery = window.matchMedia('(display-mode: standalone)')
-    mediaQuery.addEventListener('change', checkInstalled)
-
-    return () => mediaQuery.removeEventListener('change', checkInstalled)
+    const handleChange = () => setIsInstalled(checkIsInstalled())
+    mediaQuery.addEventListener('change', handleChange)
+    return () => mediaQuery.removeEventListener('change', handleChange)
   }, [])
 
   // Capture the beforeinstallprompt event
@@ -63,7 +61,6 @@ export function useInstallPrompt(): UseInstallPromptReturn {
     const handleAppInstalled = () => {
       setIsInstalled(true)
       setDeferredPrompt(null)
-      sessionStorage.removeItem('pwa-install-dismissed')
     }
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
@@ -95,12 +92,10 @@ export function useInstallPrompt(): UseInstallPromptReturn {
 
   const dismissPrompt = useCallback(() => {
     setWasPromptDismissed(true)
-    sessionStorage.setItem('pwa-install-dismissed', 'true')
   }, [])
 
   const resetDismissed = useCallback(() => {
     setWasPromptDismissed(false)
-    sessionStorage.removeItem('pwa-install-dismissed')
   }, [])
 
   const setUseCustomBanner = useCallback((value: boolean) => {
