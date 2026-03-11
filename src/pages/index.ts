@@ -1,5 +1,6 @@
 export { Overview } from './Overview'
 export { Capabilities } from './Capabilities'
 export { Compare } from './Compare'
+export { Compatibility } from './Compatibility'
 export { HowTo } from './HowTo'
 export { Settings } from './Settings'
