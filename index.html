@@ -4,15 +4,15 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
-    <!-- PWA Meta Tags -->
-    <meta name="theme-color" content="#6366f1" />
-    <meta name="description" content="An interactive showcase demonstrating Progressive Web App capabilities, browser APIs, and best practices" />
+    <!-- PWA Meta Tags - NorthBuilt Brand Colors -->
+    <meta name="theme-color" content="#24554F" />
+    <meta name="description" content="An interactive showcase demonstrating Progressive Web App capabilities, browser APIs, and best practices - by NorthBuilt" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="PWA Demo" />
     <meta name="application-name" content="PWA Demo" />
-    <meta name="msapplication-TileColor" content="#6366f1" />
+    <meta name="msapplication-TileColor" content="#24554F" />
     <meta name="msapplication-tap-highlight" content="no" />
 
     <!-- Favicon -->
@@ -28,13 +28,38 @@
     <!-- Splash Screens for iOS -->
     <link rel="apple-touch-startup-image" href="/pwa-demo/icons/apple-splash-2048-2732.png" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2)" />
 
-    <title>PWA Demo - Progressive Web App Showcase</title>
+    <title>PWA Demo by NorthBuilt - Progressive Web App Showcase</title>
 
     <!-- Preconnect to improve performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   </head>
   <body>
+    <!-- GitHub Pages SPA redirect handler -->
+    <script>
+      // Single Page Apps for GitHub Pages
+      // https://github.com/rafgraph/spa-github-pages
+      // This script checks if a redirect has occurred and restores the original path
+      (function() {
+        var redirect = sessionStorage.redirect;
+        delete sessionStorage.redirect;
+        if (redirect && redirect !== location.href) {
+          history.replaceState(null, null, redirect);
+        }
+      })();
+      // Handle the 404.html redirect format
+      (function() {
+        var l = window.location;
+        if (l.search[1] === '/') {
+          var decoded = l.search.slice(1).split('&').map(function(s) {
+            return s.replace(/~and~/g, '&');
+          }).join('?');
+          window.history.replaceState(null, null,
+            l.pathname.slice(0, -1) + decoded + l.hash
+          );
+        }
+      })();
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
 

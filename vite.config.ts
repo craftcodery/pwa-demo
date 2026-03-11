@@ -4,8 +4,13 @@ import tailwindcss from '@tailwindcss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
 // https://vite.dev/config/
-export default defineConfig({
-  base: '/pwa-demo/',
+// Use /pwa-demo/ base for GitHub Pages, / for local dev
+export default defineConfig(({ mode }) => {
+  const isProduction = mode === 'production'
+  const base = isProduction ? '/pwa-demo/' : '/'
+
+  return {
+    base,
   plugins: [
     react(),
     tailwindcss(),
@@ -13,15 +18,15 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'icons/*.png', 'screenshots/*.png'],
       manifest: {
-        name: 'PWA Demo - Progressive Web App Showcase',
+        name: 'PWA Demo by NorthBuilt',
         short_name: 'PWA Demo',
         description: 'An interactive showcase demonstrating Progressive Web App capabilities, browser APIs, and best practices for evaluating PWAs for your projects',
-        theme_color: '#6366f1',
-        background_color: '#ffffff',
+        theme_color: '#24554F',
+        background_color: '#E5E6E6',
         display: 'standalone',
         orientation: 'any',
-        start_url: '/pwa-demo/',
-        scope: '/pwa-demo/',
+        start_url: base,
+        scope: base,
         categories: ['developer tools', 'utilities', 'education'],
         icons: [
           {
@@ -93,19 +98,19 @@ export default defineConfig({
             name: 'Test Capabilities',
             short_name: 'Capabilities',
             description: 'Test PWA features and device APIs',
-            url: '/pwa-demo/#/capabilities',
+            url: `${base}capabilities`,
             icons: [{ src: 'icons/shortcut-add.png', sizes: '96x96' }]
           },
           {
             name: 'PWA vs Native',
             short_name: 'Compare',
             description: 'Compare PWA and native app capabilities',
-            url: '/pwa-demo/#/compare',
+            url: `${base}compare`,
             icons: [{ src: 'icons/shortcut-today.png', sizes: '96x96' }]
           }
         ],
         share_target: {
-          action: '/pwa-demo/#/share',
+          action: `${base}share`,
           method: 'GET',
           params: {
             title: 'title',
@@ -154,4 +159,5 @@ export default defineConfig({
       }
     })
   ]
+  }
 })

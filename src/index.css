@@ -1,32 +1,134 @@
 @import "tailwindcss";
 
-:root {
-  --color-primary: #6366f1;
-  --color-primary-dark: #4f46e5;
-  --color-success: #10b981;
-  --color-warning: #f59e0b;
+/* Google Fonts - Work Sans and Titillium Web */
+@import url('https://fonts.googleapis.com/css2?family=Oxanium:wght@700&family=Titillium+Web:wght@400;600;700&family=Work+Sans:wght@300;400;500;600;700;800&display=swap');
+
+/* Enable class-based dark mode for Tailwind v4 */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  /* NorthBuilt Brand Colors */
+  --color-nb-green: #24554F;
+  --color-nb-green-light-1: #2E6B64;
+  --color-nb-green-light-2: #378178;
+  --color-nb-green-light-3: #40968C;
+  --color-nb-yellow: #FFAB40;
+  --color-nb-blue: #45818E;
+
+  /* NorthBuilt Greyscale */
+  --color-nb-gray-900: #3C3E3E;
+  --color-nb-gray-800: #505353;
+  --color-nb-gray-700: #5A5E5D;
+  --color-nb-gray-600: #696D6D;
+  --color-nb-gray-500: #7D8281;
+  --color-nb-gray-400: #979B9A;
+  --color-nb-gray-300: #B1B4B4;
+  --color-nb-gray-200: #CBCDCD;
+  --color-nb-gray-100: #E5E6E6;
+
+  /* Legacy aliases for compatibility */
+  --color-primary: #24554F;
+  --color-primary-dark: #1a3d39;
+  --color-success: #24554F;
+  --color-warning: #FFAB40;
   --color-error: #ef4444;
 }
 
+/* NorthBuilt Typography */
 html {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Work Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  letter-spacing: -0.02em; /* -2% as per brand guidelines */
+}
+
+/* NorthBuilt Display Font (for titles, CTAs) - derived from Oxanium */
+.font-northbuilt {
+  font-family: 'Oxanium', system-ui, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: -0.32px;
+  font-weight: 700;
+}
+
+/* Titillium Web for small print */
+.font-small-print {
+  font-family: 'Titillium Web', system-ui, sans-serif;
+}
+
+/* NorthBuilt Heading Styles (Work Sans) */
+h1, .h1 {
+  font-family: 'Work Sans', system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.32px;
+}
+
+h2, .h2 {
+  font-family: 'Work Sans', system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.32px;
+}
+
+h3, .h3, h4, .h4, h5, .h5 {
+  font-family: 'Work Sans', system-ui, sans-serif;
+  font-weight: 500;
+  letter-spacing: -0.32px;
 }
 
 body {
   margin: 0;
   min-height: 100vh;
-  background-color: #f8fafc;
+  background-color: #E5E6E6; /* NorthBuilt lightest gray - Light Mode */
 }
 
-@media (prefers-color-scheme: dark) {
-  body {
-    background-color: #0f172a;
-  }
+/*
+ * Dark Mode: Uses NorthBuilt Green as primary background
+ * Following the logo treatment: white/light text on green background
+ */
+.dark body,
+html.dark body {
+  background-color: #24554F; /* NorthBuilt Green - matches logo background */
+}
+
+/* Pointer cursor for interactive elements */
+button,
+[role="button"],
+a,
+select,
+input[type="checkbox"],
+input[type="radio"],
+label[for] {
+  cursor: pointer;
+}
+
+button:disabled,
+[disabled] {
+  cursor: not-allowed;
+}
+
+/* Accessible focus states */
+:focus-visible {
+  outline: 2px solid #24554F;
+  outline-offset: 2px;
+}
+
+.dark :focus-visible {
+  outline-color: #40968C;
+}
+
+/* Skip to content for screen readers */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
 }
 
 /* Smooth transitions for theme changes */
 * {
-  transition: background-color 0.2s ease, border-color 0.2s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
 /* Install prompt animation */
@@ -43,6 +145,21 @@ body {
 
 .animate-slide-up {
   animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-down {
+  animation: slideDown 0.3s ease-out;
 }
 
 @keyframes fadeIn {
