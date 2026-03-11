@@ -7,7 +7,7 @@ interface InstallButtonProps {
 }
 
 export function InstallButton({ variant = 'primary', className = '' }: InstallButtonProps) {
-  const { isInstallable, isInstalled, canShowNativePrompt, installPrompt } = useInstallPrompt()
+  const { isInstallable, isInstalled, installPrompt } = useInstallPrompt()
 
   // isInstalled is known synchronously on first render - no flicker
   if (isInstalled) {
