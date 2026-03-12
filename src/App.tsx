@@ -213,34 +213,25 @@ function CompatibilityPage() {
   )
 }
 
-// Create router with basename for GitHub Pages (production) or root (development)
-const basename = import.meta.env.PROD ? '/pwa-demo' : ''
-
-const router = createBrowserRouter(
-  [
-    {
-      path: '/',
-      element: <Layout />,
-      errorElement: <ErrorBoundary />,
-      children: [
-        { index: true, element: <Overview /> },
-        { path: 'capabilities', element: <CapabilitiesPage /> },
-        { path: 'capabilities/:tab', element: <CapabilitiesPage /> },
-        { path: 'compare', element: <Compare /> },
-        { path: 'compatibility', element: <CompatibilityPage /> },
-        { path: 'compatibility/:tab', element: <CompatibilityPage /> },
-        { path: 'howto', element: <HowToPage /> },
-        { path: 'howto/:section', element: <HowToPage /> },
-        { path: 'settings', element: <Settings /> },
-        // Catch-all shows 404 error
-        { path: '*', loader: () => { throw new Response('Not Found', { status: 404 }) } }
-      ]
-    }
-  ],
+const router = createBrowserRouter([
   {
-    basename
+    path: '/',
+    element: <Layout />,
+    errorElement: <ErrorBoundary />,
+    children: [
+      { index: true, element: <Overview /> },
+      { path: 'capabilities', element: <CapabilitiesPage /> },
+      { path: 'capabilities/:tab', element: <CapabilitiesPage /> },
+      { path: 'compare', element: <Compare /> },
+      { path: 'compatibility', element: <CompatibilityPage /> },
+      { path: 'compatibility/:tab', element: <CompatibilityPage /> },
+      { path: 'howto', element: <HowToPage /> },
+      { path: 'howto/:section', element: <HowToPage /> },
+      { path: 'settings', element: <Settings /> },
+      { path: '*', loader: () => { throw new Response('Not Found', { status: 404 }) } }
+    ]
   }
-)
+])
 
 function App() {
   return <RouterProvider router={router} />
