@@ -4,10 +4,9 @@ import tailwindcss from '@tailwindcss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
 // https://vite.dev/config/
-// Use /pwa-demo/ base for GitHub Pages, / for local dev
-export default defineConfig(({ mode }) => {
-  const isProduction = mode === 'production'
-  const base = isProduction ? '/pwa-demo/' : '/'
+// Use / base for custom domain (pwa.northbuilt.com)
+export default defineConfig(() => {
+  const base = '/'
 
   return {
     base,
